@@ -8,9 +8,7 @@ interface IAaveFallbackOracle {
 }
 
 contract OrbitOracle {
-    // Goerli Address
-    IAaveFallbackOracle internal constant AAVE_V2_FALLBACK_ORACLE =
-        IAaveFallbackOracle(0x0F9d5ED72f6691E47abe2f79B890C3C33e924092);
+    IAaveFallbackOracle internal immutable AAVE_V2_FALLBACK_ORACLE;
 
     // using aave v2 oracle to remove price discrepancy
     function setPrice(address token_, uint256 price_) public {
@@ -19,5 +17,9 @@ contract OrbitOracle {
 
     function getPriceInEth(address token_) external view returns (uint256) {
         return AAVE_V2_FALLBACK_ORACLE.getAssetPrice(token_);
+    }
+
+    constructor(address aaveFallbackOracle_) payable {
+        AAVE_V2_FALLBACK_ORACLE = IAaveFallbackOracle(aaveFallbackOracle_);
     }
 }

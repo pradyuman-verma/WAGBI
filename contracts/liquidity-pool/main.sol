@@ -4,8 +4,99 @@ pragma solidity ^0.8.0;
 import "./helpers.sol";
 import {SafeERC20} from "../dependencies/SafeERC20.sol";
 
-contract Internals is Helpers {
+contract AdminModule is Helpers {
+    constructor(
+        address wethAddr_,
+        address usdcAddr_,
+        address daiAddr_,
+        address wbtcAddr_,
+        address lenders_,
+        address uc_
+    ) Helpers(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, lenders_, uc_) {}
+
+    modifier onlyAuth() {
+        if (msg.sender != auth) revert("only-auth");
+        _;
+    }
+
+    modifier onlyUCProtocol() {
+        require(UC_PROTOCOL_ADDR == msg.sender, "not-a-protocol");
+        _;
+    }
+
+    function enableUser(address userAddr_) public onlyUCProtocol {
+        _userToProtocol[userAddr_] = UC_PROTOCOL_ADDR;
+    }
+
+    /**
+     * @dev Function to set protocol parameters
+     * @param protocolAddr_ address of protocol
+     * @param supplyTokens_ array of supply tokens
+     * @param supplyAllowances_ array of bools. true => enabled, false => disable
+     * @param borrowTokens_ array of borrow tokens
+     * @param borrowAllowances_ array of respective borrow limits
+     */
+    function updateProtocolParams(
+        address protocolAddr_,
+        address[] calldata supplyTokens_,
+        bool[] calldata supplyAllowances_,
+        address[] calldata borrowTokens_,
+        uint256[] calldata borrowAllowances_
+    ) public onlyAuth {
+        uint256 supplyLength_ = supplyTokens_.length;
+        uint256 borrowLength_ = borrowTokens_.length;
+        require(
+            supplyAllowances_.length == supplyLength_,
+            "supply-lengths-not-same"
+        );
+        require(
+            borrowAllowances_.length == borrowLength_,
+            "borrow-lengths-not-same"
+        );
+        for (uint256 i; i < supplyLength_; ) {
+            uint256 allowance_;
+            if (supplyAllowances_[i]) allowance_ = 1;
+
+            _protocolData[protocolAddr_][supplyTokens_[i]] =
+                _protocolData[protocolAddr_][supplyTokens_[i]] |
+                1;
+            unchecked {
+                ++i;
+            }
+        }
+        for (uint256 i; i < borrowLength_; ) {
+            _protocolData[protocolAddr_][borrowTokens_[i]] = pack(
+                _protocolData[protocolAddr_][borrowTokens_[i]],
+                borrowAllowances_[i],
+                1,
+                58
+            );
+            unchecked {
+                ++i;
+            }
+        }
+
+        emit updateProtocolParamsLog(
+            protocolAddr_,
+            supplyTokens_,
+            supplyAllowances_,
+            borrowTokens_,
+            borrowAllowances_
+        );
+    }
+}
+
+contract Internals is AdminModule {
     using SafeERC20 for IERC20;
+
+    constructor(
+        address wethAddr_,
+        address usdcAddr_,
+        address daiAddr_,
+        address wbtcAddr_,
+        address lenders_,
+        address uc_
+    ) AdminModule(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, lenders_, uc_) {}
 
     function calRateFromUtilization(uint256 utilization_)
         internal
@@ -330,6 +421,19 @@ contract Internals is Helpers {
 }
 
 contract LiquidityPool is Internals {
+    constructor(
+        address wethAddr_,
+        address usdcAddr_,
+        address daiAddr_,
+        address wbtcAddr_,
+        address lenders_,
+        address uc_,
+        address auth_
+    ) Internals(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, lenders_, uc_) {
+        auth = auth_;
+        _status = 1;
+    }
+
     function supply(
         address token_,
         uint256 amount_,

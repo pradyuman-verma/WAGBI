@@ -4,6 +4,14 @@ pragma solidity ^0.8.0;
 import "./events.sol";
 
 contract Helpers is Events {
+    constructor(
+        address wethAddr_,
+        address usdcAddr_,
+        address daiAddr_,
+        address wbtcAddr_,
+        address lenders_,
+        address uc_
+    ) Events(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, lenders_, uc_) {}
 
     struct TokenData {
         uint256 decimals;

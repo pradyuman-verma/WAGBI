@@ -6,24 +6,24 @@ import "./interfaces.sol";
 contract Variables {
     // TOKENS
     // weth
-    address internal constant WETH_ADDR = address(0);
-    uint256 internal constant WETH_DECIMALS = 0;
-    uint256 internal constant WETH_BORROW_ALLOWANCE = 0;
+    address internal immutable WETH_ADDR = address(0);
+    uint256 internal immutable WETH_DECIMALS = 0;
+    uint256 internal immutable WETH_BORROW_ALLOWANCE = 0;
 
     // usdc
-    address internal constant USDC_ADDR = address(0);
-    uint256 internal constant USDC_DECIMALS = 0;
-    uint256 internal constant USDC_BORROW_ALLOWANCE = 0;
+    address internal immutable USDC_ADDR = address(0);
+    uint256 internal immutable USDC_DECIMALS = 0;
+    uint256 internal immutable USDC_BORROW_ALLOWANCE = 0;
 
     // dai
-    address internal constant DAI_ADDR = address(0);
-    uint256 internal constant DAI_DECIMALS = 0;
-    uint256 internal constant DAI_BORROW_ALLOWANCE = 0;
+    address internal immutable DAI_ADDR = address(0);
+    uint256 internal immutable DAI_DECIMALS = 0;
+    uint256 internal immutable DAI_BORROW_ALLOWANCE = 0;
 
     // wbtc
-    address internal constant WBTC_ADDR = address(0);
-    uint256 internal constant WBTC_DECIMALS = 0;
-    uint256 internal constant WBTC_BORROW_ALLOWANCE = 0;
+    address internal immutable WBTC_ADDR = address(0);
+    uint256 internal immutable WBTC_DECIMALS = 0;
+    uint256 internal immutable WBTC_BORROW_ALLOWANCE = 0;
 
     // RATE CURVE DATA
     uint256 internal constant SLOPE_1 = 0; // TODO:
@@ -44,8 +44,8 @@ contract Variables {
     uint256 internal constant RAW_BORROW_CAP = 2.88e17;
 
     // PROTOCOLS
-    address internal constant LENDERS_PROTOCOL_ADDR = address(0);
-    address internal constant UC_PROTOCOL_ADDR = address(0);
+    address internal immutable LENDERS_PROTOCOL_ADDR = address(0);
+    address internal immutable UC_PROTOCOL_ADDR = address(0);
 
     // STORAGE VARIABLES
 
@@ -85,4 +85,28 @@ contract Variables {
     // Next 58 bits => 59-116 => user raw borrow (raw borrow = totalBorrow / borrowExchangePrice)
     // Last 139 bits blank
     mapping(address => mapping(address => uint256)) public _userData;
+
+    constructor(
+        address wethAddr_,
+        address usdcAddr_,
+        address daiAddr_,
+        address wbtcAddr_,
+        address lenders_,
+        address uc_
+    ) {
+        WETH_ADDR = wethAddr_;
+        WETH_DECIMALS = IERC20(WETH_ADDR).decimals();
+        WETH_BORROW_ALLOWANCE = 5 * (10**(WETH_DECIMALS + 9));
+        USDC_ADDR = usdcAddr_;
+        USDC_DECIMALS = IERC20(USDC_ADDR).decimals();
+        USDC_BORROW_ALLOWANCE = 5 * (10**(USDC_DECIMALS + 9));
+        DAI_ADDR = daiAddr_;
+        DAI_DECIMALS = IERC20(DAI_ADDR).decimals();
+        DAI_BORROW_ALLOWANCE = 5 * (10**(DAI_DECIMALS + 9));
+        WBTC_ADDR = wbtcAddr_;
+        WBTC_DECIMALS = IERC20(WBTC_ADDR).decimals();
+        WBTC_BORROW_ALLOWANCE = 5 * (10**(WBTC_DECIMALS + 9));
+        LENDERS_PROTOCOL_ADDR = lenders_;
+        UC_PROTOCOL_ADDR = uc_;
+    }
 }

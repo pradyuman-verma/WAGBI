@@ -66,6 +66,11 @@ contract Internals is Helpers {
             newBorrowExchangePrice_ =
                 lastBorrowExchangePrice_ +
                 ((lastBorrowExchangePrice_ * borrowRate_ * timePassed_) / 1e18);
+
+            // exchange price wont increase after 1e12
+            // added so the code doesn't break for the edge case
+            if (newSupplyExchangePrice_ > 1e12) newSupplyExchangePrice_ = 1e12;
+            if (newBorrowExchangePrice_ > 1e12) newBorrowExchangePrice_ = 1e12;
         }
     }
 
@@ -189,6 +194,24 @@ contract Internals is Helpers {
         poolDatas_.utilization = totalSupply_ == 0
             ? 0
             : (totalBorrow_ * 1e8) / totalSupply_; // utilization is in 8 decimals
+
+        if (borrowAmount_ > 0) {
+            // borrowAmount_ > 0 means its a borrow transaction
+            if (poolDatas_.utilization > BORROW_UTILIZATION_CAP) {
+                // utilization cap check
+                revert("utilization-cap-reached");
+            }
+
+            if (totalBorrow_ > tokenData_.borrowAllowance) {
+                // borrow limit check
+                revert("borrow-allowance-reached");
+            }
+
+            if (poolDatas_.lastBorrowExchangePrice == 1e12) {
+                // no borrowings will be allowed as borrow rates will be zero if exchange price reached 1e12
+                revert("exchange-price-breached");
+            }
+        }
 
         _poolData[token_] = compilePoolData(
             poolDatas_.utilization,

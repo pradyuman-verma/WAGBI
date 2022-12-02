@@ -1,9 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./interfaces.sol";
+import "@openzeppelin/contracts/proxy/Clones.sol";
 
-contract UCWalletFactoryImplementation {
+interface ILiquidity {
+    function enableUser(address userAddr_) external;
+}
+
+interface Wallet {
+    function initializeAuth(address auth_) external;
+}
+
+contract UCWalletFactory {
     ILiquidity immutable LIQUIDITY;
 
     address internal immutable WALLET;

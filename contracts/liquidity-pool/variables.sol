@@ -44,8 +44,8 @@ contract Variables {
     uint256 internal constant RAW_BORROW_CAP = 2.88e17;
 
     // PROTOCOLS
-    address internal immutable LENDERS_PROTOCOL_ADDR = address(0); // TODO:
-    address internal immutable UC_PROTOCOL_ADDR = address(0); // TODO:
+    address internal immutable LENDERS_PROTOCOL_ADDR;
+    address internal immutable UC_PROTOCOL_ADDR;
 
     // STORAGE VARIABLES
 

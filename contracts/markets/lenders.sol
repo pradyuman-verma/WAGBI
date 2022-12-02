@@ -30,7 +30,7 @@ interface ILiquidity {
 }
 
 contract LendersMarket {
-    ILiquidity internal constant LIQUIDITY = ILiquidity(address(0)); // TODO: Update address
+    ILiquidity internal immutable LIQUIDITY;
 
     uint256 internal _status;
 
@@ -71,5 +71,9 @@ contract LendersMarket {
         );
 
         userRawSupply[msg.sender] -= newRawAmount_ - oldRawAmount_;
+    }
+
+    constructor(address liquidityPoolAddr_) payable {
+        LIQUIDITY = ILiquidity(liquidityPoolAddr_);
     }
 }

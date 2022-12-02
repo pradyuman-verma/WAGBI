@@ -222,7 +222,14 @@ contract Internals is Helpers {
             poolDatas_.rawBorrow
         );
 
-        // event
+        emit updateStorageLog(
+            token_,
+            msg.sender,
+            newSupplyExchangePrice_,
+            newBorrowExchangePrice_,
+            totalSupply_,
+            totalBorrow_
+        );
     }
 
     function supplyInternal(
@@ -245,7 +252,8 @@ contract Internals is Helpers {
             supplyExchangePrice_,
             borrowExchangePrice_
         ) = updateStorage(token_, int256(amount_), 0);
-        // event
+
+        emit supplyLog(msg.sender, token_, amount_, from_);
     }
 
     function withdrawInternal(
@@ -268,7 +276,8 @@ contract Internals is Helpers {
             borrowExchangePrice_
         ) = updateStorage(token_, -int256(amount_), 0);
         IERC20(token_).safeTransfer(to_, amount_);
-        // event
+
+        emit withdrawLog(msg.sender, token_, amount_, to_);
     }
 
     function borrowInternal(
@@ -291,7 +300,8 @@ contract Internals is Helpers {
             borrowExchangePrice_
         ) = updateStorage(token_, 0, int256(amount_));
         IERC20(token_).safeTransfer(to_, amount_);
-        // event
+
+        emit borrowLog(msg.sender, token_, amount_, to_);
     }
 
     function paybackInternal(
@@ -314,7 +324,8 @@ contract Internals is Helpers {
             supplyExchangePrice_,
             borrowExchangePrice_
         ) = updateStorage(token_, 0, -int256(amount_));
-        // event
+
+        emit paybackLog(msg.sender, token_, amount_, from_);
     }
 }
 

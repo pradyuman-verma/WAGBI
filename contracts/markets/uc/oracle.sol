@@ -7,7 +7,7 @@ interface IAaveFallbackOracle {
     function getAssetPrice(address token_) external view returns (uint256);
 }
 
-contract OrbitOracle {
+contract Oracle {
     IAaveFallbackOracle internal immutable AAVE_V2_FALLBACK_ORACLE;
 
     // using aave v2 oracle to remove price discrepancy

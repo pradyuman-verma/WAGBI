@@ -6,24 +6,24 @@ import "./interfaces.sol";
 contract Variables {
     // TOKENS
     // weth
-    address internal immutable WETH_ADDR = address(0);
-    uint256 internal immutable WETH_DECIMALS = 0;
-    uint256 internal immutable WETH_BORROW_ALLOWANCE = 0;
+    address internal immutable WETH_ADDR;
+    uint256 internal immutable WETH_DECIMALS;
+    uint256 internal immutable WETH_BORROW_ALLOWANCE;
 
     // usdc
-    address internal immutable USDC_ADDR = address(0);
-    uint256 internal immutable USDC_DECIMALS = 0;
-    uint256 internal immutable USDC_BORROW_ALLOWANCE = 0;
+    address internal immutable USDC_ADDR;
+    uint256 internal immutable USDC_DECIMALS;
+    uint256 internal immutable USDC_BORROW_ALLOWANCE;
 
     // dai
-    address internal immutable DAI_ADDR = address(0);
-    uint256 internal immutable DAI_DECIMALS = 0;
-    uint256 internal immutable DAI_BORROW_ALLOWANCE = 0;
+    address internal immutable DAI_ADDR;
+    uint256 internal immutable DAI_DECIMALS;
+    uint256 internal immutable DAI_BORROW_ALLOWANCE;
 
     // wbtc
-    address internal immutable WBTC_ADDR = address(0);
-    uint256 internal immutable WBTC_DECIMALS = 0;
-    uint256 internal immutable WBTC_BORROW_ALLOWANCE = 0;
+    address internal immutable WBTC_ADDR;
+    uint256 internal immutable WBTC_DECIMALS;
+    uint256 internal immutable WBTC_BORROW_ALLOWANCE;
 
     // RATE CURVE DATA
     uint256 internal constant SLOPE_1 = 0; // TODO:
@@ -44,8 +44,8 @@ contract Variables {
     uint256 internal constant RAW_BORROW_CAP = 2.88e17;
 
     // PROTOCOLS
-    address internal immutable LENDERS_PROTOCOL_ADDR = address(0);
-    address internal immutable UC_PROTOCOL_ADDR = address(0);
+    address internal immutable LENDERS_PROTOCOL_ADDR = address(0); // TODO:
+    address internal immutable UC_PROTOCOL_ADDR = address(0); // TODO:
 
     // STORAGE VARIABLES
 

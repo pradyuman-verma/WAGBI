@@ -13,6 +13,14 @@ contract Events is Variables {
         address uc_
     ) Variables(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, lenders_, uc_) {}
 
+    event updateProtocolParamsLog(
+        address protocolAddr_,
+        address[] supplyTokens_,
+        bool[] supplyAllowances_,
+        address[] borrowTokens_,
+        uint256[] borrowAllowances_
+    );
+
     event supplyLog(
         address userAddr_,
         address tokens_,

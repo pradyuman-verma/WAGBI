@@ -49,7 +49,7 @@ contract LendersMarket {
         address for_
     ) external nonReentrant {
         if (amount_ == 0) revert("amount = 0");
-        (oldRawAmount_, newRawAmount_, , ) = LIQUIDITY.supply(
+        (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.supply(
             token_,
             amount_,
             msg.sender
@@ -64,7 +64,7 @@ contract LendersMarket {
         address to_
     ) external nonReentrant {
         if (amount_ == 0) revert("amount = 0");
-        (oldRawAmount_, newRawAmount_, , ) = LIQUIDITY.withdraw(
+        (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.withdraw(
             token_,
             amount_,
             to_

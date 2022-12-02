@@ -118,4 +118,32 @@ contract Helpers is Events {
             revert("user-not-whitelisted");
         }
     }
+
+    function getUserBorrowAmount(address user_, address token_)
+        public
+        view
+        returns (uint256 rawBorrowAmount_, uint256 borrowAmount_)
+    {
+        TokenData memory tokenData_ = getTokenData(token_);
+        rawBorrowAmount_ = unpack(_userData[user_][token_], 59, 116);
+        borrowAmount_ =
+            (rawBorrowAmount_ *
+                unpack(_poolData[token_], 99, 138) *
+                (10**tokenData_.decimals)) /
+            1e16;
+    }
+
+    function getUserSupplyAmount(address user_, address token_)
+        public
+        view
+        returns (uint256 rawSupplyAmount, uint256 supplyAmount)
+    {
+        TokenData memory tokenData_ = getTokenData(token_);
+        rawSupplyAmount = unpack(_userData[user_][token_], 0, 58);
+        supplyAmount =
+            (rawSupplyAmount *
+                unpack(_poolData[token_], 59, 98) *
+                (10**tokenData_.decimals)) /
+            1e16;
+    }
 }

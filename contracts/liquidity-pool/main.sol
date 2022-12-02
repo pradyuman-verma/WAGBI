@@ -2,8 +2,11 @@
 pragma solidity ^0.8.0;
 
 import "./helpers.sol";
+import {SafeERC20} from "../dependencies/SafeERC20.sol";
 
 contract Internals is Helpers {
+    using SafeERC20 for IERC20;
+
     function supplyInternal(
         address token_,
         uint256 amount_,

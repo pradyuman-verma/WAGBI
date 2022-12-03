@@ -266,7 +266,7 @@ contract LiquidityPool is Internals {
         address lenders_,
         address uc_,
         address auth_
-    ) Internals(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, lenders_, uc_) {
+    ) payable Internals(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, lenders_, uc_) {
         auth = auth_;
         _status = 1;
     }

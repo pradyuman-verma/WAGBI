@@ -135,6 +135,8 @@ contract Helpers is Variables {
         )
     {
         uint256 priceInEth_;
+        uint256 supplyExchangePrice_;
+        uint256 borrowExchangePrice_;
         for (uint256 i; i < 4; ) {
             // supply
             if (userTokensData_ & (1 << i) > 0) {
@@ -149,8 +151,9 @@ contract Helpers is Variables {
                     0,
                     58
                 );
-                uint256 supplyExchangePrice_;
-                // TODO: get supply exchange price
+                if (supplyExchangePrice_ == 0)
+                    (supplyExchangePrice_, borrowExchangePrice_) = LIQUIDITY
+                        .getExchangePrices(asset_);
                 uint256 supplyAmount_ = (rawSupply_ *
                     supplyExchangePrice_ *
                     (10**decimals_)) / 1e16;
@@ -174,8 +177,10 @@ contract Helpers is Variables {
                     59,
                     116
                 );
-                uint256 borrowExchangePrice_;
-                // TODO: get borrow exchange price
+
+                if (borrowExchangePrice_ == 0)
+                    (supplyExchangePrice_, borrowExchangePrice_) = LIQUIDITY
+                        .getExchangePrices(asset_);
                 uint256 borrowAmount_ = (rawBorrow_ *
                     borrowExchangePrice_ *
                     (10**decimals_)) / 1e16;
@@ -186,22 +191,33 @@ contract Helpers is Variables {
                     (df_ * (10**decimals_));
             }
             priceInEth_ = 0;
+            supplyExchangePrice_ = 0;
+            borrowExchangePrice_ = 0;
             unchecked {
                 ++i;
             }
         }
     }
 
-    function getHf(uint256 userTokensData_) public view returns (uint256 hf_) {
-        // TODO:
+    function getHf(address user_, uint256 userTokensData_)
+        public
+        view
+        returns (uint256 hf_)
+    {
+        (
+            uint256 normalizedCollateralInEth_,
+            uint256 normalizedDebtInEth_
+        ) = getHfData(user_, userTokensData_);
+
+        hf_ = (normalizedCollateralInEth_ * 1e18) / normalizedDebtInEth_;
     }
 
     function getHf(address user_) public view returns (uint256 hf_) {
-        return getHf(userTokensData[user_]);
+        return getHf(user_, userTokensData[user_]);
     }
 
-    function checkHf(uint256 userTokensData_) internal view {
-        uint256 hf_ = getHf(userTokensData_);
+    function checkHf(address user_, uint256 userTokensData_) internal view {
+        uint256 hf_ = getHf(user_, userTokensData_);
         if (hf_ < MIN_HF_THRESHOLD) revert("position-not-safe");
     }
 }

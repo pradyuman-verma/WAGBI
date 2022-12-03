@@ -105,6 +105,73 @@ contract Helpers is Events {
         poolDatas_.rawBorrow = unpack(poolData_, 198, 255);
     }
 
+    function calRateFromUtilization(uint256 utilization_)
+        internal
+        pure
+        returns (uint256 rate_)
+    {
+        // scaled from 4 decimals to 8 decimals as utilization is in 8 decimals
+        uint256 kink_ = KINK * 1e4;
+
+        uint256 slope_;
+        uint256 constant_;
+        uint256 sign_;
+        if (utilization_ < kink_) {
+            slope_ = SLOPE_1;
+            constant_ = CONSTANT_1;
+            sign_ = SIGN_1;
+        } else {
+            slope_ = SLOPE_2;
+            constant_ = CONSTANT_2;
+            sign_ = SIGN_2;
+        }
+        // rate is in 18 decimals // 1e18 = 100%
+        // rate means rate per second
+        rate_ = ((slope_ * utilization_) / 1e8);
+        if (sign_ == 1) {
+            rate_ += constant_;
+        } else {
+            rate_ -= constant_;
+        }
+    }
+
+    function updateInterest(
+        uint256 utilization_,
+        uint256 lastUpdateTimestamp_,
+        uint256 lastSupplyExchangePrice_,
+        uint256 lastBorrowExchangePrice_
+    )
+        internal
+        view
+        returns (
+            uint256 newSupplyExchangePrice_,
+            uint256 newBorrowExchangePrice_
+        )
+    {
+        if (lastUpdateTimestamp_ == 0) {
+            newSupplyExchangePrice_ = 1e8;
+            newBorrowExchangePrice_ = 1e8;
+        } else {
+            uint256 borrowRate_ = calRateFromUtilization(utilization_);
+            uint256 supplyRate_ = (borrowRate_ * utilization_ * (10000 - FEE)) /
+                1e12;
+            uint256 timePassed_ = block.timestamp - lastUpdateTimestamp_;
+
+            newSupplyExchangePrice_ =
+                lastSupplyExchangePrice_ +
+                ((lastSupplyExchangePrice_ * supplyRate_ * timePassed_) / 1e18);
+
+            newBorrowExchangePrice_ =
+                lastBorrowExchangePrice_ +
+                ((lastBorrowExchangePrice_ * borrowRate_ * timePassed_) / 1e18);
+
+            // exchange price wont increase after 1e12
+            // added so the code doesn't break for the edge case
+            if (newSupplyExchangePrice_ > 1e12) newSupplyExchangePrice_ = 1e12;
+            if (newBorrowExchangePrice_ > 1e12) newBorrowExchangePrice_ = 1e12;
+        }
+    }
+
     function validateUser(address user_)
         internal
         view
@@ -117,6 +184,22 @@ contract Helpers is Events {
         } else {
             revert("user-not-whitelisted");
         }
+    }
+
+    function getExchangePrices(address token_)
+        public
+        view
+        returns (uint256 supplyExchangePrice_, uint256 borrowExchangePrice_)
+    {
+        uint256 poolData_ = _poolData[token_];
+        PoolData memory poolDatas_ = decompilePoolData(poolData_);
+
+        (supplyExchangePrice_, borrowExchangePrice_) = updateInterest(
+            poolDatas_.utilization,
+            poolDatas_.lastUpdateTimestamp,
+            poolDatas_.lastSupplyExchangePrice,
+            poolDatas_.lastBorrowExchangePrice
+        );
     }
 
     function getUserBorrowAmount(address user_, address token_)

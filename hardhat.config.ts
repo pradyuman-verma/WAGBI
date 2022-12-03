@@ -36,7 +36,7 @@ const mnemonic =
 const networkGasPriceConfig: Record<string, number> = {
   polygon: 50,
   mumbai: 300,
-  goerli: 100
+  goerli: 10
 };
 
 function createConfig(network: string) {

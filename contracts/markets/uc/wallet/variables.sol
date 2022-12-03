@@ -103,7 +103,7 @@ contract Variables {
     // Next 50 bits => 150-199 => aave supply tokens
     // Next 50 bits => 200-249 => aave borrow tokens
     // Last 6 bits left blank
-    uint256 public oswData;
+    uint256 public walletData;
 
     // Used to make sure `initializeAuth` can only be called once, and for reentrancy
     uint256 internal _status;

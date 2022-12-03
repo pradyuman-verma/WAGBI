@@ -23,4 +23,16 @@ contract UCMarket is Helpers {
             wbtcAddr_
         )
     {}
+
+    // called by factory
+    function initializeAuth(address auth_) external {
+        if (_status != 0) revert("only-once");
+        auth = auth_;
+        _status = 1;
+    }
+
+    modifier onlyAuth() {
+        if (auth == msg.sender) revert("only-auth");
+        _;
+    }
 }

@@ -224,4 +224,35 @@ contract Helpers is Variables {
         uint256 hf_ = getHf(user_, userTokensData_);
         if (hf_ < MIN_HF_THRESHOLD) revert("position-not-safe");
     }
+
+    function getSupplyAmount(address user_, address token_)
+        public
+        view
+        returns (uint256 supplyAmount_)
+    {
+        uint256 decimals_ = IERC20(token_).decimals();
+        uint256 rawSupply_ = unpack(userAmountsData[user_][token_], 0, 58);
+        (uint256 supplyExchangePrice_, ) = LIQUIDITY_POOL.getExchangePrices(
+            token_
+        );
+        supplyAmount_ =
+            (rawSupply_ * supplyExchangePrice_ * (10**decimals_)) /
+            1e16;
+    }
+
+    function getBorrowAmount(address user_, address token_)
+        public
+        view
+        returns (uint256 borrowAmount_)
+    {
+        uint256 decimals_ = IERC20(token_).decimals();
+        uint256 rawBorrow_ = unpack(userAmountsData[user_][token_], 59, 116);
+
+        (, uint256 borrowExchangePrice_) = LIQUIDITY_POOL.getExchangePrices(
+            token_
+        );
+        borrowAmount_ =
+            (rawBorrow_ * borrowExchangePrice_ * (10**decimals_)) /
+            1e16;
+    }
 }

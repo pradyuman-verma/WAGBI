@@ -88,4 +88,23 @@ contract UCMarket is Helpers {
         }
         // no hf check for supply liquidity
     }
+
+    function supplyToWallet(address token_, uint256 amount_) external onlyAuth {
+        if (amount_ == 0) revert("zero-amount");
+
+        uint256 assetIndex_ = getAssetIndex(token_);
+
+        bool addToHoldTokens_;
+        if (IERC20(token_).balanceOf(address(this)) == 0)
+            addToHoldTokens_ = true;
+
+        IERC20(token_).safeTransferFrom(msg.sender, address(this), amount_);
+
+        if (addToHoldTokens_) {
+            uint256 walletData_ = walletData;
+            walletData_ = addToHoldTokens(walletData_, assetIndex_);
+            if (walletData_ != walletData) walletData = walletData_;
+        }
+        // no hf check for supply
+    }
 }

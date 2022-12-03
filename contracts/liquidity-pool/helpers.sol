@@ -229,4 +229,19 @@ contract Helpers is Events {
                 (10**tokenData_.decimals)) /
             1e16;
     }
+
+    function getRates(address token_)
+        public
+        view
+        returns (uint256 supplyRate_, uint256 borrowRate_)
+    {
+        uint256 secondsInYear = 31536000;
+        uint256 utilization_ = unpack(_poolData[token_], 0, 26);
+        uint256 borrowRatePerSecond_ = calRateFromUtilization(utilization_);
+        uint256 supplyRatePerSecond_ = (borrowRate_ *
+            utilization_ *
+            (10000 - FEE)) / 1e12;
+        supplyRate_ = supplyRatePerSecond_ * secondsInYear;
+        borrowRate_ = borrowRatePerSecond_ * secondsInYear;
+    }
 }

@@ -36,6 +36,7 @@ const mnemonic =
 const networkGasPriceConfig: Record<string, number> = {
   polygon: 50,
   mumbai: 300,
+  goerli: 10
 };
 
 function createConfig(network: string) {
@@ -86,6 +87,7 @@ const config: HardhatUserConfig = {
     },
     mumbai: createConfig("mumbai"),
     polygon: createConfig("polygon"),
+    goerli: createConfig("goerli"),
   },
   paths: {
     artifacts: "./artifacts",

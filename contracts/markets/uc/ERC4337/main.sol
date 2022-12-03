@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./helpers.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import {SafeERC20} from "../../../dependencies/SafeERC20.sol";
 
 contract UCMarket is Helpers {
@@ -12,6 +13,7 @@ contract UCMarket is Helpers {
         address liquidityPoolAddr_,
         address oracleAddr_,
         address aaveDataProviderAddr_,
+        address aaveInteractor_,
         address wethAddr_,
         address usdcAddr_,
         address daiAddr_,
@@ -22,6 +24,7 @@ contract UCMarket is Helpers {
             liquidityPoolAddr_,
             oracleAddr_,
             aaveDataProviderAddr_,
+            aaveInteractor_,
             wethAddr_,
             usdcAddr_,
             daiAddr_,
@@ -150,7 +153,7 @@ contract UCMarket is Helpers {
         }
 
         if (to_ != address(this)) {
-            // TODO: check hf
+            checkHf();
         }
     }
 
@@ -178,7 +181,7 @@ contract UCMarket is Helpers {
             walletData_ = removeFromHoldTokens(walletData_, assetIndex_);
             if (walletData_ != walletData) walletData = walletData_;
         }
-        // TODO: check hf
+        checkHf();
     }
 
     function borrowToWallet(address token_, uint256 amount_) external onlyAuth {
@@ -210,7 +213,7 @@ contract UCMarket is Helpers {
             }
             if (walletData_ != walletData) walletData = walletData_;
         }
-        // TODO: check hf
+        checkHf();
     }
 
     function payback(
@@ -255,5 +258,15 @@ contract UCMarket is Helpers {
             }
             if (walletData_ != walletData) walletData = walletData_;
         }
+    }
+
+    // function for external `restricted` interaction
+    function launchAave(bytes calldata params_) internal onlyAuth {
+        Address.functionDelegateCall(
+            AAVE_V2_INTERACTOR,
+            params_,
+            "interaction-failed"
+        );
+        checkHf();
     }
 }

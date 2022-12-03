@@ -9,6 +9,7 @@ contract Variables {
         address liquidityPoolAddr_,
         address oracleAddr_,
         address aaveDataProviderAddr_,
+        address aaveInteractor_,
         address wethAddr_,
         address usdcAddr_,
         address daiAddr_,
@@ -17,6 +18,7 @@ contract Variables {
         LIQUIDITY_POOL = ILiquidityPool(liquidityPoolAddr_);
         ORACLE = IOracle(oracleAddr_);
         AAVE_DATA_PROVIDER = IAaveDataProvider(aaveDataProviderAddr_);
+        AAVE_V2_INTERACTOR = aaveInteractor_;
 
         WETH_ADDR = wethAddr_;
         WETH_DECIMALS = IERC20(WETH_ADDR).decimals();
@@ -92,6 +94,8 @@ contract Variables {
     address internal immutable AAVE_WBTC_VARIABLE_DEBT_TOKEN_ADDR;
     uint256 internal constant WBTC_CF = 9000; // 10000 = 100%
     uint256 internal constant WBTC_DF = 9000; // 10000 = 100%
+
+    address internal immutable AAVE_V2_INTERACTOR;
 
     // hf thresholds
     uint256 internal constant MIN_HF_THRESHOLD = 1e18; // User can make position with hf only above this threshold

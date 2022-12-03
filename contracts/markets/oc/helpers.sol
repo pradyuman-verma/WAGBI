@@ -89,7 +89,7 @@ contract Helpers is Variables {
         return getHf(userTokensData[user_]);
     }
 
-    function checkHf(uint256 userTokensData_) public view {
+    function checkHf(uint256 userTokensData_) internal view {
         uint256 hf_ = getHf(userTokensData_);
         if (hf_ < MIN_HF_THRESHOLD) revert("position-not-safe");
     }

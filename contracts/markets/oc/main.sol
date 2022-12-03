@@ -51,6 +51,8 @@ contract OCMarket is Helpers {
         );
         if (newUserTokensData_ != userTokensData_)
             userTokensData[for_] = newUserTokensData_;
+
+        // TODO: event
     }
 
     function withdraw(
@@ -78,9 +80,10 @@ contract OCMarket is Helpers {
             58
         );
 
+        uint256 userTokensData_ = userTokensData[msg.sender];
+
         // update user tokens data
         if (userFinalSuppliedAmount_ == 0) {
-            uint256 userTokensData_ = userTokensData[msg.sender];
             uint256 newUserTokensData_ = removeFromSupplyTokens(
                 userTokensData_,
                 assetIndex_
@@ -89,6 +92,8 @@ contract OCMarket is Helpers {
                 userTokensData[to_] = newUserTokensData_;
         }
 
-        // TODO: check hf
+        checkHf(userTokensData_);
+
+        // TODO: event
     }
 }

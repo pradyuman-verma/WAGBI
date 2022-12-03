@@ -9,16 +9,9 @@ contract WagbiWallet is ERC4337, UCMarket {
 
     uint256 public wNonce;
 
-    // Domain Seperators
-    // keccak256(
-    //     "EIP712Domain(uint256 chainId,address verifyingContract)"
-    // );
     bytes32 internal constant DOMAIN_SEPARATOR_TYPEHASH =
         0x47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218;
 
-    // keccak256(
-    //     "WalletTx(address to,uint256 value,bytes data,uint8 operation,uint256 targetTxGas,uint256 baseGas,uint256 gasPrice,address gasToken,address refundReceiver,uint256 nonce)"
-    // );
     bytes32 internal constant WALLET_TX_TYPEHASH =
         0xeedfef42e81fe8cd0e4185e4320e9f8d52fd97eb890b85fa9bd7ad97c9a18de2;
 
@@ -65,6 +58,22 @@ contract WagbiWallet is ERC4337, UCMarket {
 
     function entryPoint() public view virtual override returns (IEntryPoint) {
         return ENTRY_POINT;
+    }
+
+    function getMessageHash(address from_, uint256 _nonce)
+        public
+        pure
+        returns (bytes32)
+    {
+        return
+            keccak256(
+                abi.encodePacked(
+                    WALLET_TX_TYPEHASH,
+                    DOMAIN_SEPARATOR_TYPEHASH,
+                    from_,
+                    _nonce
+                )
+            );
     }
 
     // over-riding Parent contract existing method

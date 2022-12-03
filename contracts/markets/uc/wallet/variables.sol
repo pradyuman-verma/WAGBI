@@ -60,6 +60,8 @@ contract Variables {
     uint256 internal immutable WETH_DECIMALS;
     address internal immutable AAVE_WETH_COLLATERAL_TOKEN_ADDR;
     address internal immutable AAVE_WETH_VARIABLE_DEBT_TOKEN_ADDR;
+    uint256 internal constant WETH_CF = 9000; // 10000 = 100%
+    uint256 internal constant WETH_DF = 9000; // 10000 = 100%
 
     // usdc
     address internal immutable USDC_ADDR;
@@ -67,6 +69,8 @@ contract Variables {
     uint256 internal immutable USDC_DECIMALS;
     address internal immutable AAVE_USDC_COLLATERAL_TOKEN_ADDR;
     address internal immutable AAVE_USDC_VARIABLE_DEBT_TOKEN_ADDR;
+    uint256 internal constant USDC_CF = 9000; // 10000 = 100%
+    uint256 internal constant USDC_DF = 9000; // 10000 = 100%
 
     // dai
     address internal immutable DAI_ADDR;
@@ -74,6 +78,8 @@ contract Variables {
     uint256 internal immutable DAI_DECIMALS;
     address internal immutable AAVE_DAI_COLLATERAL_TOKEN_ADDR;
     address internal immutable AAVE_DAI_VARIABLE_DEBT_TOKEN_ADDR;
+    uint256 internal constant DAI_CF = 9000; // 10000 = 100%
+    uint256 internal constant DAI_DF = 9000; // 10000 = 100%
 
     // wbtc
     address internal immutable WBTC_ADDR;
@@ -81,6 +87,8 @@ contract Variables {
     uint256 internal immutable WBTC_DECIMALS;
     address internal immutable AAVE_WBTC_COLLATERAL_TOKEN_ADDR;
     address internal immutable AAVE_WBTC_VARIABLE_DEBT_TOKEN_ADDR;
+    uint256 internal constant WBTC_CF = 9000; // 10000 = 100%
+    uint256 internal constant WBTC_DF = 9000; // 10000 = 100%
 
     // STORAGE VARIABLES
 

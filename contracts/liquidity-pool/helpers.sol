@@ -9,9 +9,9 @@ contract Helpers is Events {
         address usdcAddr_,
         address daiAddr_,
         address wbtcAddr_,
-        address lenders_,
+        address oc_,
         address uc_
-    ) Events(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, lenders_, uc_) {}
+    ) Events(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, oc_, uc_) {}
 
     struct TokenData {
         uint256 decimals;
@@ -108,12 +108,12 @@ contract Helpers is Events {
     function validateUser(address user_)
         internal
         view
-        returns (address protocolAddr_)
+        returns (address marketAddr_)
     {
-        if (user_ == LENDERS_PROTOCOL_ADDR) {
-            protocolAddr_ = LENDERS_PROTOCOL_ADDR;
-        } else if (_userToProtocol[user_] == UC_PROTOCOL_ADDR) {
-            protocolAddr_ = UC_PROTOCOL_ADDR;
+        if (user_ == OC_MARKET_ADDR) {
+            marketAddr_ = OC_MARKET_ADDR;
+        } else if (_userToProtocol[user_] == UC_MARKET_ADDR) {
+            marketAddr_ = UC_MARKET_ADDR;
         } else {
             revert("user-not-whitelisted");
         }

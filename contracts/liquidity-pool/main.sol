@@ -19,13 +19,13 @@ contract AdminModule is Helpers {
         _;
     }
 
-    modifier onlyUCProtocol() {
-        require(UC_PROTOCOL_ADDR == msg.sender, "not-a-protocol");
+    modifier onlyUCMarket() {
+        require(UC_MARKET_ADDR == msg.sender, "not-a-protocol");
         _;
     }
 
-    function enableUser(address userAddr_) public onlyUCProtocol {
-        _userToProtocol[userAddr_] = UC_PROTOCOL_ADDR;
+    function enableUser(address userAddr_) public onlyUCMarket {
+        _userToProtocol[userAddr_] = UC_MARKET_ADDR;
     }
 
     /**

@@ -43,9 +43,9 @@ contract Variables {
     // borrow wont be allowed above raw borrow cap
     uint256 internal constant RAW_BORROW_CAP = 2.88e17;
 
-    // PROTOCOLS
-    address internal immutable LENDERS_PROTOCOL_ADDR;
-    address internal immutable UC_PROTOCOL_ADDR;
+    // MARKETS
+    address internal immutable OC_MARKET_ADDR;
+    address internal immutable UC_MARKET_ADDR;
 
     // STORAGE VARIABLES
 
@@ -91,7 +91,7 @@ contract Variables {
         address usdcAddr_,
         address daiAddr_,
         address wbtcAddr_,
-        address lenders_,
+        address oc_,
         address uc_
     ) {
         WETH_ADDR = wethAddr_;
@@ -106,7 +106,7 @@ contract Variables {
         WBTC_ADDR = wbtcAddr_;
         WBTC_DECIMALS = IERC20(WBTC_ADDR).decimals();
         WBTC_BORROW_ALLOWANCE = 5 * (10**(WBTC_DECIMALS + 9));
-        LENDERS_PROTOCOL_ADDR = lenders_;
-        UC_PROTOCOL_ADDR = uc_;
+        OC_MARKET_ADDR = oc_;
+        UC_MARKET_ADDR = uc_;
     }
 }

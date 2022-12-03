@@ -9,9 +9,9 @@ contract Events is Variables {
         address usdcAddr_,
         address daiAddr_,
         address wbtcAddr_,
-        address lenders_,
+        address oc_,
         address uc_
-    ) Variables(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, lenders_, uc_) {}
+    ) Variables(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, oc_, uc_) {}
 
     event updateProtocolParamsLog(
         address protocolAddr_,

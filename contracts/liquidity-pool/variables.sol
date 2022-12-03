@@ -25,7 +25,7 @@ contract Variables {
     uint256 internal immutable WBTC_DECIMALS;
     uint256 internal immutable WBTC_BORROW_ALLOWANCE;
 
-    // RATE CURVE DATA
+    // RATE CURVE DATA (Common for all tokens for MVP)
     uint256 internal constant SLOPE_1 = 0; // TODO:
     uint256 internal constant CONSTANT_1 = 0; // TODO:
     uint256 internal constant SIGN_1 = 0; // TODO:

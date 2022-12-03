@@ -11,21 +11,29 @@ contract Variables {
     address internal immutable WETH_ADDR;
     uint256 internal immutable WETH_DECIMALS;
     uint256 internal constant WETH_INDEX = 0;
+    uint256 internal constant WETH_CF = 9000; // 10000 = 100%
+    uint256 internal constant WETH_DF = 9000; // 10000 = 100%
 
     // usdc
     address internal immutable USDC_ADDR;
     uint256 internal immutable USDC_DECIMALS;
     uint256 internal constant USDC_INDEX = 1;
+    uint256 internal constant USDC_CF = 9000; // 10000 = 100%
+    uint256 internal constant USDC_DF = 9000; // 10000 = 100%
 
     // dai
     address internal immutable DAI_ADDR;
     uint256 internal immutable DAI_DECIMALS;
     uint256 internal constant DAI_INDEX = 2;
+    uint256 internal constant DAI_CF = 9000; // 10000 = 100%
+    uint256 internal constant DAI_DF = 9000; // 10000 = 100%
 
     // wbtc
     address internal immutable WBTC_ADDR;
     uint256 internal immutable WBTC_DECIMALS;
     uint256 internal constant WBTC_INDEX = 3;
+    uint256 internal constant WBTC_CF = 9000; // 10000 = 100%
+    uint256 internal constant WBTC_DF = 9000; // 10000 = 100%
 
     uint256 internal constant MIN_HF_THRESHOLD = 1e18;
 
@@ -34,7 +42,7 @@ contract Variables {
     // status = 2 throws
     uint256 internal _status;
 
-    // User Supply and Borrow amounts data
+    // User Supply and Borrow Amounts data
     // user => token => uint
     // 2 things stored in a single uint:-
     // First 59 bits => 0-58 => user raw supply (raw supply = totalSupply / supplyExchangePrice)
@@ -42,7 +50,10 @@ contract Variables {
     // Last 139 bits blank
     mapping(address => mapping(address => uint256)) public userAmountsData;
 
-    mapping(address => uint256) public userTokensData; // TODO: This will store in which tokens a user supplied in bits
+    // User Supply and Borrow Tokens data (Bit mapping)
+    // First 128 bits => 0-127 => supply tokens bit mapping
+    // Next 128 bits => 128-255 => borrow tokens bit mapping
+    mapping(address => uint256) public userTokensData;
 
     constructor(
         address liquidityAddr_,

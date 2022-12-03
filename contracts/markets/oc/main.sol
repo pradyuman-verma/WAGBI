@@ -26,21 +26,31 @@ contract OCMarket is Helpers {
         uint256 amount_,
         address to_
     ) external {
+        uint256 assetIndex_;
+        // TODO: get asset index
+
         (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.supply(
             token_,
             amount_,
             msg.sender
         );
+
+        // update user amounts data
         uint256 userAmountsData_ = userAmountsData[to_][token_];
-        uint256 userRawSupply_ = unpack(userAmountsData_, 0, 58);
-        if (userRawSupply_ == 0) {
-            // TODO: add token user supply tokens data
-        }
         userAmountsData[to_][token_] = pack(
             userAmountsData_,
-            userRawSupply_ + newRawAmount_ - oldRawAmount_,
+            unpack(userAmountsData_, 0, 58) + newRawAmount_ - oldRawAmount_,
             0,
             58
         );
+
+        // update user tokens data
+        uint256 userTokensData_ = userTokensData[to_];
+        uint256 newUserTokensData_ = addToSupplyTokens(
+            userTokensData_,
+            assetIndex_
+        );
+        if (newUserTokensData_ != userTokensData_)
+            userTokensData[to_] = newUserTokensData_;
     }
 }

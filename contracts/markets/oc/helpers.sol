@@ -33,6 +33,36 @@ contract Helpers is Variables {
             (255 + startPosition_ - endPosition_);
     }
 
+    function addToSupplyTokens(uint256 userTokensData_, uint256 assetIndex_)
+        internal
+        pure
+        returns (uint256 newUserTokensData_)
+    {
+        newUserTokensData_ = userTokensData_ | (1 << assetIndex_);
+    }
+
+    function removeFromSupplyTokens(
+        uint256 userTokensData_,
+        uint256 assetIndex_
+    ) internal pure returns (uint256 newUserTokensData_) {
+        newUserTokensData_ = userTokensData_ & ~(1 << assetIndex_);
+    }
+
+    function addToBorrowTokens(uint256 userTokensData_, uint256 assetIndex_)
+        internal
+        pure
+        returns (uint256 newUserTokensData_)
+    {
+        newUserTokensData_ = userTokensData_ | (1 << (assetIndex_ + 128));
+    }
+
+    function removeFromBorrowTokens(
+        uint256 userTokensData_,
+        uint256 assetIndex_
+    ) internal pure returns (uint256 newUserTokensData_) {
+        newUserTokensData_ = userTokensData_ & ~(1 << (assetIndex_ + 128));
+    }
+
     function getHf(address user_) public view returns (uint256 hf_) {
         // TODO:
     }

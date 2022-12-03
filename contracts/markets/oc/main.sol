@@ -5,7 +5,7 @@ import "./helpers.sol";
 
 contract OCMarket is Helpers {
     constructor(
-        address liquidityAddr_,
+        address liquidityPoolAddr_,
         address oracleAddr_,
         address wethAddr_,
         address usdcAddr_,
@@ -13,7 +13,7 @@ contract OCMarket is Helpers {
         address wbtcAddr_
     )
         Helpers(
-            liquidityAddr_,
+            liquidityPoolAddr_,
             oracleAddr_,
             wethAddr_,
             usdcAddr_,
@@ -38,11 +38,8 @@ contract OCMarket is Helpers {
     ) external nonReentrant {
         uint256 assetIndex_ = getAssetToIndex(token_);
 
-        (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.supply(
-            token_,
-            amount_,
-            msg.sender
-        );
+        (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY_POOL
+            .supply(token_, amount_, msg.sender);
 
         // update user amounts data
         uint256 userAmountsData_ = userAmountsData[for_][token_];
@@ -72,11 +69,8 @@ contract OCMarket is Helpers {
     ) external nonReentrant {
         uint256 assetIndex_ = getAssetToIndex(token_);
 
-        (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.withdraw(
-            token_,
-            amount_,
-            to_
-        );
+        (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY_POOL
+            .withdraw(token_, amount_, to_);
 
         // update user amounts data
         uint256 userAmountsData_ = userAmountsData[msg.sender][token_];
@@ -114,11 +108,8 @@ contract OCMarket is Helpers {
     ) external nonReentrant {
         uint256 assetIndex_ = getAssetToIndex(token_);
 
-        (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.borrow(
-            token_,
-            amount_,
-            to_
-        );
+        (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY_POOL
+            .borrow(token_, amount_, to_);
 
         // update user amounts data
         uint256 userAmountsData_ = userAmountsData[msg.sender][token_];
@@ -150,11 +141,8 @@ contract OCMarket is Helpers {
     ) external nonReentrant {
         uint256 assetIndex_ = getAssetToIndex(token_);
 
-        (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.payback(
-            token_,
-            amount_,
-            msg.sender
-        );
+        (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY_POOL
+            .payback(token_, amount_, msg.sender);
 
         uint256 userAmountsData_ = userAmountsData[for_][token_];
         uint256 userFinalBorrowedAmount_ = unpack(userAmountsData_, 59, 116) +

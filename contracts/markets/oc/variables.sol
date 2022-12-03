@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "./interfaces.sol";
 
 contract Variables {
-    ILiquidity internal immutable LIQUIDITY;
+    ILiquidityPool internal immutable LIQUIDITY_POOL;
     IOracle internal immutable ORACLE;
 
     // TOKENS
@@ -57,14 +57,14 @@ contract Variables {
     mapping(address => uint256) public userTokensData;
 
     constructor(
-        address liquidityAddr_,
+        address liquidityPoolAddr_,
         address oracleAddr_,
         address wethAddr_,
         address usdcAddr_,
         address daiAddr_,
         address wbtcAddr_
     ) {
-        LIQUIDITY = ILiquidity(liquidityAddr_);
+        LIQUIDITY_POOL = ILiquidityPool(liquidityPoolAddr_);
         ORACLE = IOracle(oracleAddr_);
         WETH_ADDR = wethAddr_;
         WETH_DECIMALS = IERC20(WETH_ADDR).decimals();

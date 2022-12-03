@@ -5,7 +5,7 @@ import "./variables.sol";
 
 contract Helpers is Variables {
     constructor(
-        address liquidityAddr_,
+        address liquidityPoolAddr_,
         address oracleAddr_,
         address wethAddr_,
         address usdcAddr_,
@@ -13,7 +13,7 @@ contract Helpers is Variables {
         address wbtcAddr_
     )
         Variables(
-            liquidityAddr_,
+            liquidityPoolAddr_,
             oracleAddr_,
             wethAddr_,
             usdcAddr_,
@@ -152,8 +152,10 @@ contract Helpers is Variables {
                     58
                 );
                 if (supplyExchangePrice_ == 0)
-                    (supplyExchangePrice_, borrowExchangePrice_) = LIQUIDITY
-                        .getExchangePrices(asset_);
+                    (
+                        supplyExchangePrice_,
+                        borrowExchangePrice_
+                    ) = LIQUIDITY_POOL.getExchangePrices(asset_);
                 uint256 supplyAmount_ = (rawSupply_ *
                     supplyExchangePrice_ *
                     (10**decimals_)) / 1e16;
@@ -179,8 +181,10 @@ contract Helpers is Variables {
                 );
 
                 if (borrowExchangePrice_ == 0)
-                    (supplyExchangePrice_, borrowExchangePrice_) = LIQUIDITY
-                        .getExchangePrices(asset_);
+                    (
+                        supplyExchangePrice_,
+                        borrowExchangePrice_
+                    ) = LIQUIDITY_POOL.getExchangePrices(asset_);
                 uint256 borrowAmount_ = (rawBorrow_ *
                     borrowExchangePrice_ *
                     (10**decimals_)) / 1e16;

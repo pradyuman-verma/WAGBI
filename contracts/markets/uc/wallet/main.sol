@@ -107,4 +107,50 @@ contract UCMarket is Helpers {
         }
         // no hf check for supply
     }
+
+    // withdraw can be either to wallet or outside
+    // hf checked if it is outside
+    function withdrawFromLiquidityPool(
+        address token_,
+        uint256 amount_,
+        address to_
+    ) internal {
+        if (amount_ == 0) revert("zero-amount");
+
+        uint256 assetIndex_ = getAssetIndex(token_);
+
+        bool removeFromSupplyTokens_;
+        bool addToHoldTokens_;
+
+        (, uint256 supplyAmount_) = LIQUIDITY_POOL.getUserSupplyAmount(
+            address(this),
+            token_
+        );
+        if (amount_ == type(uint256).max) amount_ = supplyAmount_;
+        if (amount_ > supplyAmount_) revert("excess-withdraw");
+        if (amount_ == supplyAmount_) removeFromSupplyTokens_ = true;
+
+        if (
+            to_ == address(this) && IERC20(token_).balanceOf(address(this)) == 0
+        ) {
+            addToHoldTokens_ = true;
+        }
+
+        LIQUIDITY_POOL.withdraw(token_, amount_, to_);
+
+        if (removeFromSupplyTokens_ || addToHoldTokens_) {
+            uint256 walletData_ = walletData;
+            if (removeFromSupplyTokens_) {
+                walletData_ = removeFromSupplyTokens(walletData_, assetIndex_);
+            }
+            if (addToHoldTokens_) {
+                walletData_ = addToHoldTokens(walletData_, assetIndex_);
+            }
+            if (walletData_ != walletData) walletData = walletData_;
+        }
+
+        if (to_ != address(this)) {
+            // TODO: check hf
+        }
+    }
 }

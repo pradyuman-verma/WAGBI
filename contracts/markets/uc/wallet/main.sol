@@ -112,7 +112,7 @@ contract UCMarket is Helpers {
         address token_,
         uint256 amount_,
         address to_
-    ) internal {
+    ) external onlyAuth {
         if (amount_ == 0) revert("zero-amount");
         uint256 assetIndex_ = getAssetIndex(token_);
 
@@ -176,5 +176,81 @@ contract UCMarket is Helpers {
             if (walletData_ != walletData) walletData = walletData_;
         }
         // TODO: check hf
+    }
+
+    function borrowToWallet(address token_, uint256 amount_) external onlyAuth {
+        if (amount_ == 0) revert("zero-amount");
+        uint256 assetIndex_ = getAssetIndex(token_);
+
+        bool addToBorrowTokens_;
+        bool addToHoldTokens_;
+
+        if (IERC20(token_).balanceOf(address(this)) == 0)
+            addToHoldTokens_ = true;
+
+        (uint256 oldRawAmount_, , , ) = LIQUIDITY_POOL.borrow(
+            token_,
+            amount_,
+            address(this)
+        );
+        if (oldRawAmount_ == 0) {
+            addToBorrowTokens_ = true;
+        }
+
+        if (addToBorrowTokens_ || addToHoldTokens_) {
+            uint256 walletData_ = walletData;
+            if (addToBorrowTokens_) {
+                walletData_ = addToBorrowTokens(walletData_, assetIndex_);
+            }
+            if (addToHoldTokens_) {
+                walletData_ = addToHoldTokens(walletData_, assetIndex_);
+            }
+            if (walletData_ != walletData) walletData = walletData_;
+        }
+        // TODO: check hf
+    }
+
+    function payback(
+        address token_,
+        uint256 amount_,
+        bool fromOsw_
+    ) external onlyAuth {
+        if (amount_ == 0) revert("zero-amount");
+        uint256 assetIndex_ = getAssetIndex(token_);
+
+        address fromAddr_;
+        bool removeFromBorrowTokens_;
+        bool removeFromHoldTokens_;
+
+        (, uint256 borrowAmount_) = LIQUIDITY_POOL.getUserBorrowAmount(
+            address(this),
+            token_
+        );
+        if (amount_ == type(uint256).max) amount_ = borrowAmount_;
+        if (amount_ > borrowAmount_) revert("excess-payback");
+        if (amount_ == borrowAmount_) removeFromBorrowTokens_ = true;
+        if (fromOsw_) {
+            if (amount_ == IERC20(token_).balanceOf(address(this))) {
+                removeFromHoldTokens_ = true;
+            }
+
+            IERC20(token_).safeApprove(address(LIQUIDITY_POOL), amount_);
+            fromAddr_ = address(this);
+        } else {
+            fromAddr_ = msg.sender;
+        }
+
+        LIQUIDITY_POOL.payback(token_, amount_, fromAddr_);
+
+        if (removeFromBorrowTokens_ || removeFromHoldTokens_) {
+            uint256 walletData_ = walletData;
+            if (removeFromBorrowTokens_) {
+                walletData_ = removeFromBorrowTokens(walletData_, assetIndex_);
+            }
+            if (removeFromHoldTokens_) {
+                walletData_ = removeFromHoldTokens(walletData_, assetIndex_);
+            }
+            if (walletData_ != walletData) walletData = walletData_;
+        }
     }
 }

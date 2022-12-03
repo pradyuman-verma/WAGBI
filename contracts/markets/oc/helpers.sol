@@ -81,12 +81,16 @@ contract Helpers is Variables {
         newUserTokensData_ = userTokensData_ & ~(1 << (assetIndex_ + 128));
     }
 
-    function getHf(address user_) public view returns (uint256 hf_) {
+    function getHf(uint256 userTokensData_) public view returns (uint256 hf_) {
         // TODO:
     }
 
-    function checkHf(address user_) internal view {
-        uint256 hf_ = getHf(user_);
+    function getHf(address user_) public view returns (uint256 hf_) {
+        return getHf(userTokensData[user_]);
+    }
+
+    function checkHf(uint256 userTokensData_) public view {
+        uint256 hf_ = getHf(userTokensData_);
         if (hf_ < MIN_HF_THRESHOLD) revert("position-not-safe");
     }
 }

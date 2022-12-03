@@ -16,7 +16,7 @@ contract UCWalletFactory {
 
     address internal immutable WALLET;
 
-    mapping(address => address[]) authToWallet;
+    mapping(address => address[]) public authToWallet;
 
     event createLog(address auth_, address origin_);
 

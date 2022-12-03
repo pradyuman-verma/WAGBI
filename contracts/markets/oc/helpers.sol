@@ -33,6 +33,24 @@ contract Helpers is Variables {
             (255 + startPosition_ - endPosition_);
     }
 
+    function getAssetIndex(address token_)
+        internal
+        view
+        returns (uint256 assetIndex_)
+    {
+        if (token_ == WETH_ADDR) {
+            assetIndex_ = WETH_INDEX;
+        } else if (token_ == USDC_ADDR) {
+            assetIndex_ = USDC_INDEX;
+        } else if (token_ == DAI_ADDR) {
+            assetIndex_ = DAI_INDEX;
+        } else if (token_ == WBTC_ADDR) {
+            assetIndex_ = WBTC_INDEX;
+        } else {
+            revert("unsupported-token");
+        }
+    }
+
     function addToSupplyTokens(uint256 userTokensData_, uint256 assetIndex_)
         internal
         pure

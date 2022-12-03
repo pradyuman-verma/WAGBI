@@ -26,8 +26,7 @@ contract OCMarket is Helpers {
         uint256 amount_,
         address to_
     ) external {
-        uint256 assetIndex_;
-        // TODO: get asset index
+        uint256 assetIndex_ = getAssetIndex(token_);
 
         (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.supply(
             token_,

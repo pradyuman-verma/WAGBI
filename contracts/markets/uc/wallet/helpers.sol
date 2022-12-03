@@ -62,4 +62,52 @@ contract Helpers is Variables {
             revert("unsupported-token");
         }
     }
+
+    function addToSupplyTokens(uint256 walletData_, uint256 assetIndex_)
+        internal
+        pure
+        returns (uint256 newWalletData_)
+    {
+        newWalletData_ = walletData_ | (1 << assetIndex_);
+    }
+
+    function removeFromSupplyTokens(uint256 walletData_, uint256 assetIndex_)
+        internal
+        pure
+        returns (uint256 newWalletData_)
+    {
+        newWalletData_ = walletData_ & ~(1 << assetIndex_);
+    }
+
+    function addToBorrowTokens(uint256 walletData_, uint256 assetIndex_)
+        internal
+        pure
+        returns (uint256 newWalletData_)
+    {
+        newWalletData_ = walletData_ | (1 << (assetIndex_ + 50));
+    }
+
+    function removeFromBorrowTokens(uint256 walletData_, uint256 assetIndex_)
+        internal
+        pure
+        returns (uint256 newWalletData_)
+    {
+        newWalletData_ = walletData_ & ~(1 << (assetIndex_ + 50));
+    }
+
+    function addToHoldTokens(uint256 walletData_, uint256 assetIndex_)
+        internal
+        pure
+        returns (uint256 newWalletData_)
+    {
+        newWalletData_ = walletData_ | (1 << (assetIndex_ + 100));
+    }
+
+    function removeFromHoldTokens(uint256 walletData_, uint256 assetIndex_)
+        internal
+        pure
+        returns (uint256 newWalletData_)
+    {
+        newWalletData_ = walletData_ & ~(1 << (assetIndex_ + 100));
+    }
 }

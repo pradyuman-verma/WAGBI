@@ -75,3 +75,14 @@ interface ILiquidityPool {
 interface IOracle {
     function getPriceInEth(address token_) external view returns (uint256);
 }
+
+interface IAaveDataProvider {
+    function getReserveTokensAddresses(address asset)
+        external
+        view
+        returns (
+            address atokenAddr_,
+            address stableDebtTokenAddr_,
+            address variableDebtTokenAddr_
+        );
+}

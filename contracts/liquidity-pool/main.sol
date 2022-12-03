@@ -87,8 +87,6 @@ contract AdminModule is Helpers {
 }
 
 contract Internals is AdminModule {
-    using SafeERC20 for IERC20;
-
     constructor(
         address wethAddr_,
         address usdcAddr_,
@@ -255,105 +253,11 @@ contract Internals is AdminModule {
             totalBorrow_
         );
     }
-
-    function supplyInternal(
-        address token_,
-        uint256 amount_,
-        address from_
-    )
-        internal
-        returns (
-            uint256 oldRawAmount_,
-            uint256 newRawAmount_,
-            uint256 supplyExchangePrice_,
-            uint256 borrowExchangePrice_
-        )
-    {
-        IERC20(token_).safeTransferFrom(from_, address(this), amount_);
-        (
-            oldRawAmount_,
-            newRawAmount_,
-            supplyExchangePrice_,
-            borrowExchangePrice_
-        ) = updateStorage(token_, int256(amount_), 0);
-
-        emit supplyLog(msg.sender, token_, amount_, from_);
-    }
-
-    function withdrawInternal(
-        address token_,
-        uint256 amount_,
-        address to_
-    )
-        internal
-        returns (
-            uint256 oldRawAmount_,
-            uint256 newRawAmount_,
-            uint256 supplyExchangePrice_,
-            uint256 borrowExchangePrice_
-        )
-    {
-        (
-            oldRawAmount_,
-            newRawAmount_,
-            supplyExchangePrice_,
-            borrowExchangePrice_
-        ) = updateStorage(token_, -int256(amount_), 0);
-        IERC20(token_).safeTransfer(to_, amount_);
-
-        emit withdrawLog(msg.sender, token_, amount_, to_);
-    }
-
-    function borrowInternal(
-        address token_,
-        uint256 amount_,
-        address to_
-    )
-        internal
-        returns (
-            uint256 oldRawAmount_,
-            uint256 newRawAmount_,
-            uint256 supplyExchangePrice_,
-            uint256 borrowExchangePrice_
-        )
-    {
-        (
-            oldRawAmount_,
-            newRawAmount_,
-            supplyExchangePrice_,
-            borrowExchangePrice_
-        ) = updateStorage(token_, 0, int256(amount_));
-        IERC20(token_).safeTransfer(to_, amount_);
-
-        emit borrowLog(msg.sender, token_, amount_, to_);
-    }
-
-    function paybackInternal(
-        address token_,
-        uint256 amount_,
-        address from_
-    )
-        internal
-        returns (
-            uint256 oldRawAmount_,
-            uint256 newRawAmount_,
-            uint256 supplyExchangePrice_,
-            uint256 borrowExchangePrice_
-        )
-    {
-        IERC20(token_).safeTransferFrom(from_, address(this), amount_);
-        (
-            oldRawAmount_,
-            newRawAmount_,
-            supplyExchangePrice_,
-            borrowExchangePrice_
-        ) = updateStorage(token_, 0, -int256(amount_));
-
-        emit paybackLog(msg.sender, token_, amount_, from_);
-    }
 }
 
 contract LiquidityPool is Internals {
+    using SafeERC20 for IERC20;
+
     constructor(
         address wethAddr_,
         address usdcAddr_,
@@ -381,12 +285,15 @@ contract LiquidityPool is Internals {
             uint256 borrowExchangePrice_
         )
     {
+        IERC20(token_).safeTransferFrom(from_, address(this), amount_);
         (
             oldRawAmount_,
             newRawAmount_,
             supplyExchangePrice_,
             borrowExchangePrice_
-        ) = supplyInternal(token_, amount_, from_);
+        ) = updateStorage(token_, int256(amount_), 0);
+
+        emit supplyLog(msg.sender, token_, amount_, from_);
     }
 
     function withdraw(
@@ -408,7 +315,10 @@ contract LiquidityPool is Internals {
             newRawAmount_,
             supplyExchangePrice_,
             borrowExchangePrice_
-        ) = withdrawInternal(token_, amount_, to_);
+        ) = updateStorage(token_, -int256(amount_), 0);
+        IERC20(token_).safeTransfer(to_, amount_);
+
+        emit withdrawLog(msg.sender, token_, amount_, to_);
     }
 
     function borrow(
@@ -430,7 +340,10 @@ contract LiquidityPool is Internals {
             newRawAmount_,
             supplyExchangePrice_,
             borrowExchangePrice_
-        ) = borrowInternal(token_, amount_, to_);
+        ) = updateStorage(token_, 0, int256(amount_));
+        IERC20(token_).safeTransfer(to_, amount_);
+
+        emit borrowLog(msg.sender, token_, amount_, to_);
     }
 
     function payback(
@@ -447,11 +360,14 @@ contract LiquidityPool is Internals {
             uint256 borrowExchangePrice_
         )
     {
+        IERC20(token_).safeTransferFrom(from_, address(this), amount_);
         (
             oldRawAmount_,
             newRawAmount_,
             supplyExchangePrice_,
             borrowExchangePrice_
-        ) = paybackInternal(token_, amount_, from_);
+        ) = updateStorage(token_, 0, -int256(amount_));
+
+        emit paybackLog(msg.sender, token_, amount_, from_);
     }
 }

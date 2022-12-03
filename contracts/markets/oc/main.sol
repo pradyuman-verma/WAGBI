@@ -89,11 +89,87 @@ contract OCMarket is Helpers {
                 assetIndex_
             );
             if (newUserTokensData_ != userTokensData_)
-                userTokensData[to_] = newUserTokensData_;
+                userTokensData[msg.sender] = newUserTokensData_;
         }
 
         checkHf(userTokensData_);
 
         // TODO: event
     }
+
+    function borrow(
+        address token_,
+        uint256 amount_,
+        address to_
+    ) external nonReentrant {
+        uint256 assetIndex_ = getAssetIndex(token_);
+
+        (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.borrow(
+            token_,
+            amount_,
+            to_
+        );
+
+        // update user amounts data
+        uint256 userAmountsData_ = userAmountsData[msg.sender][token_];
+        userAmountsData[msg.sender][token_] = pack(
+            userAmountsData_,
+            unpack(userAmountsData_, 59, 116) + newRawAmount_ - oldRawAmount_,
+            0,
+            58
+        );
+
+        // update user tokens data
+        uint256 userTokensData_ = userTokensData[msg.sender];
+        uint256 newUserTokensData_ = addToBorrowTokens(
+            userTokensData_,
+            assetIndex_
+        );
+        if (newUserTokensData_ != userTokensData_)
+            userTokensData[msg.sender] = newUserTokensData_;
+
+        checkHf(userTokensData_);
+
+        // TODO: event
+    }
+
+    function payback(
+        address token_,
+        uint256 amount_,
+        address for_
+    ) external nonReentrant {
+        uint256 assetIndex_ = getAssetIndex(token_);
+
+        (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.payback(
+            token_,
+            amount_,
+            msg.sender
+        );
+
+        uint256 userAmountsData_ = userAmountsData[for_][token_];
+        uint256 userFinalBorrowedAmount_ = unpack(userAmountsData_, 59, 116) +
+            newRawAmount_ -
+            oldRawAmount_;
+        userAmountsData[for_][token_] = pack(
+            userAmountsData_,
+            userFinalBorrowedAmount_,
+            0,
+            58
+        );
+
+        // update user tokens data
+        if (userFinalBorrowedAmount_ == 0) {
+            uint256 userTokensData_ = userTokensData[for_];
+            uint256 newUserTokensData_ = removeFromBorrowTokens(
+                userTokensData_,
+                assetIndex_
+            );
+            if (newUserTokensData_ != userTokensData_)
+                userTokensData[for_] = newUserTokensData_;
+        }
+
+        // TODO: event
+    }
+
+    // TODO: Liquidate function
 }

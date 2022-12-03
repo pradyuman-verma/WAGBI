@@ -48,6 +48,8 @@ contract UCMarket is Helpers {
     ) external onlyAuth {
         if (amount_ == 0) revert("zero-amount");
 
+        uint256 assetIndex_ = getAssetIndex(token_);
+
         bool addToSupplyTokens_;
         bool removeFromHoldTokens_;
 
@@ -75,12 +77,12 @@ contract UCMarket is Helpers {
 
             // update mapping to add to supply tokens
             if (addToSupplyTokens_) {
-                // TODO:
+                walletData_ = addToSupplyTokens(walletData_, assetIndex_);
             }
 
             // update mapping to remove from hold tokens
             if (removeFromHoldTokens_) {
-                // TODO:
+                walletData_ = removeFromHoldTokens(walletData_, assetIndex_);
             }
             if (walletData_ != walletData) walletData = walletData_;
         }

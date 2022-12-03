@@ -32,4 +32,13 @@ contract Helpers is Variables {
             (input_ << (255 - endPosition_)) >>
             (255 + startPosition_ - endPosition_);
     }
+
+    function getHf(address user_) public view returns (uint256 hf_) {
+        // TODO:
+    }
+
+    function checkHf(address user_) internal view {
+        uint256 hf_ = getHf(user_);
+        if (hf_ < MIN_HF_THRESHOLD) revert("position-not-safe");
+    }
 }

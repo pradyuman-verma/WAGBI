@@ -27,6 +27,8 @@ contract Variables {
     uint256 internal immutable WBTC_DECIMALS;
     uint256 internal constant WBTC_INDEX = 3;
 
+    uint256 internal constant MIN_HF_THRESHOLD = 1e18;
+
     // STORAGE VARIABLES
 
     // status = 2 throws

@@ -102,7 +102,7 @@ contract OCMarket is Helpers {
                 userTokensData[msg.sender] = newUserTokensData_;
         }
 
-        checkHf(userTokensData_);
+        checkHf(msg.sender, userTokensData_);
 
         // TODO: event
     }
@@ -138,7 +138,7 @@ contract OCMarket is Helpers {
         if (newUserTokensData_ != userTokensData_)
             userTokensData[msg.sender] = newUserTokensData_;
 
-        checkHf(userTokensData_);
+        checkHf(msg.sender, userTokensData_);
 
         // TODO: event
     }

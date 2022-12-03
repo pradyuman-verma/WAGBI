@@ -13,7 +13,7 @@ import "./interfaces/IEntryPoint.sol";
  * this contract provides the basic logic for implementing the IAccount interface  - validateUserOp
  * specific account implementation should inherit it and provide the account-specific logic
  */
-abstract contract BaseAccount is IAccount {
+abstract contract ERC4337 is IAccount {
     using UserOperationLib for UserOperation;
 
     /**

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.0;
 
 import "./UserOperation.sol";
 
@@ -8,7 +8,6 @@ import "./UserOperation.sol";
  * a paymaster must hold a stake to cover the required entrypoint stake and also the gas for the transaction.
  */
 interface IPaymaster {
-
     /**
      * payment validation: check if paymaster agree to pay.
      * Must verify sender is the entryPoint.
@@ -23,8 +22,11 @@ interface IPaymaster {
      * @return deadline the last block timestamp this operation is valid, or zero if it is valid indefinitely.
      *      Note that the validation code cannot use block.timestamp (or block.number) directly.
      */
-    function validatePaymasterUserOp(UserOperation calldata userOp, bytes32 userOpHash, uint256 maxCost)
-    external returns (bytes memory context, uint256 deadline);
+    function validatePaymasterUserOp(
+        UserOperation calldata userOp,
+        bytes32 userOpHash,
+        uint256 maxCost
+    ) external returns (bytes memory context, uint256 deadline);
 
     /**
      * post-operation handler.
@@ -37,7 +39,11 @@ interface IPaymaster {
      * @param context - the context value returned by validatePaymasterUserOp
      * @param actualGasCost - actual gas used so far (without this postOp call).
      */
-    function postOp(PostOpMode mode, bytes calldata context, uint256 actualGasCost) external;
+    function postOp(
+        PostOpMode mode,
+        bytes calldata context,
+        uint256 actualGasCost
+    ) external;
 
     enum PostOpMode {
         opSucceeded, // user op succeeded

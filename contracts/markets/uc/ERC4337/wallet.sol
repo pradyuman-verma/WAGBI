@@ -2,13 +2,12 @@
 pragma solidity ^0.8.0;
 import "../../../dependencies/ERC4337/ERC4337.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "./main.sol";
 
-contract WagbiWallet is ERC4337 {
+contract WagbiWallet is ERC4337, UCMarket {
     using ECDSA for bytes32;
 
     uint256 public wNonce;
-
-    IEntryPoint public immutable ENTRY_POINT;
 
     // Domain Seperators
     // keccak256(
@@ -24,7 +23,31 @@ contract WagbiWallet is ERC4337 {
         0xeedfef42e81fe8cd0e4185e4320e9f8d52fd97eb890b85fa9bd7ad97c9a18de2;
 
     // authority
-    address public auth;
+    // address public auth;
+
+    constructor(
+        address owner_,
+        address entry_,
+        address liquidityPoolAddr_,
+        address oracleAddr_,
+        address aaveDataProviderAddr_,
+        address wethAddr_,
+        address usdcAddr_,
+        address daiAddr_,
+        address wbtcAddr_
+    )
+        payable
+        UCMarket(
+            entry_,
+            liquidityPoolAddr_,
+            oracleAddr_,
+            aaveDataProviderAddr_,
+            wethAddr_,
+            usdcAddr_,
+            daiAddr_,
+            wbtcAddr_
+        )
+    {}
 
     modifier onlyOwner() {
         require(msg.sender == auth, "NOT-AUTH");
@@ -90,11 +113,6 @@ contract WagbiWallet is ERC4337 {
             id_ := chainid()
         }
         return id_;
-    }
-
-    constructor(address owner_, address entry_) payable {
-        auth = owner_;
-        ENTRY_POINT = IEntryPoint(payable(entry_));
     }
 
     receive() external payable {}

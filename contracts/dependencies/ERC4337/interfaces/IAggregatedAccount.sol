@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.0;
 
 import "./UserOperation.sol";
 import "./IAccount.sol";
@@ -11,7 +11,6 @@ import "./IAggregator.sol";
  * - the validateUserOp MUST valiate the aggregator parameter, and MAY ignore the userOp.signature field.
  */
 interface IAggregatedAccount is IAccount {
-
     /**
      * return the address of the signature aggregator the account supports.
      */

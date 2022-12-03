@@ -3,7 +3,7 @@
  ** Only one instance required on each chain.
  **/
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.0;
 
 /* solhint-disable avoid-low-level-calls */
 /* solhint-disable no-inline-assembly */
@@ -14,7 +14,6 @@ import "./IStakeManager.sol";
 import "./IAggregator.sol";
 
 interface IEntryPoint is IStakeManager {
-
     /***
      * An event emitted after each successful request
      * @param userOpHash - unique identifier for the request (hash its entire content, except signature).
@@ -25,7 +24,15 @@ interface IEntryPoint is IStakeManager {
      * @param actualGasPrice - the actual gas price the sender agreed to pay.
      * @param success - true if the sender transaction succeeded, false if reverted.
      */
-    event UserOperationEvent(bytes32 indexed userOpHash, address indexed sender, address indexed paymaster, uint256 nonce, uint256 actualGasCost, uint256 actualGasPrice, bool success);
+    event UserOperationEvent(
+        bytes32 indexed userOpHash,
+        address indexed sender,
+        address indexed paymaster,
+        uint256 nonce,
+        uint256 actualGasCost,
+        uint256 actualGasPrice,
+        bool success
+    );
 
     /**
      * An event emitted if the UserOperation "callData" reverted with non-zero length
@@ -34,7 +41,12 @@ interface IEntryPoint is IStakeManager {
      * @param nonce the nonce used in the request
      * @param revertReason - the return bytes from the (reverted) call to "callData".
      */
-    event UserOperationRevertReason(bytes32 indexed userOpHash, address indexed sender, uint256 nonce, bytes revertReason);
+    event UserOperationRevertReason(
+        bytes32 indexed userOpHash,
+        address indexed sender,
+        uint256 nonce,
+        bytes revertReason
+    );
 
     /**
      * a custom revert error of handleOps, to identify the offending op.
@@ -56,7 +68,6 @@ interface IEntryPoint is IStakeManager {
     //UserOps handled, per aggregator
     struct UserOpsPerAggregator {
         UserOperation[] userOps;
-
         // aggregator address
         IAggregator aggregator;
         // aggregated signature
@@ -71,7 +82,10 @@ interface IEntryPoint is IStakeManager {
      * @param ops the operations to execute
      * @param beneficiary the address to receive the fees
      */
-    function handleOps(UserOperation[] calldata ops, address payable beneficiary) external;
+    function handleOps(
+        UserOperation[] calldata ops,
+        address payable beneficiary
+    ) external;
 
     /**
      * Execute a batch of UserOperation with Aggregators
@@ -87,7 +101,10 @@ interface IEntryPoint is IStakeManager {
      * generate a request Id - unique identifier for this request.
      * the request ID is a hash over the content of the userOp (except the signature), the entrypoint and the chainid.
      */
-    function getUserOpHash(UserOperation calldata userOp) external view returns (bytes32);
+    function getUserOpHash(UserOperation calldata userOp)
+        external
+        view
+        returns (bytes32);
 
     /**
      * Simulate a call to account.validateUserOp and paymaster.validatePaymasterUserOp.
@@ -104,7 +121,12 @@ interface IEntryPoint is IStakeManager {
      * @param deadline until what time this userOp is valid (the minimum value of account and paymaster's deadline)
      * @param paymasterInfo stake information about the paymaster (if any)
      */
-    error SimulationResult(uint256 preOpGas, uint256 prefund, uint256 deadline, PaymasterInfo paymasterInfo);
+    error SimulationResult(
+        uint256 preOpGas,
+        uint256 prefund,
+        uint256 deadline,
+        PaymasterInfo paymasterInfo
+    );
 
     /**
      * returned paymaster info.
@@ -116,7 +138,6 @@ interface IEntryPoint is IStakeManager {
         uint256 paymasterUnstakeDelay;
     }
 
-
     /**
      * Successful result from simulateValidation, if the account returns a signature aggregator
      * @param preOpGas the gas used for validation (including preValidationGas)
@@ -126,7 +147,13 @@ interface IEntryPoint is IStakeManager {
      * @param aggregationInfo signature aggregation info (if the account requires signature aggregator)
      *      bundler MUST use it to verify the signature, or reject the UserOperation
      */
-    error SimulationResultWithAggregation(uint256 preOpGas, uint256 prefund, uint256 deadline, PaymasterInfo paymasterInfo, AggregationInfo aggregationInfo);
+    error SimulationResultWithAggregation(
+        uint256 preOpGas,
+        uint256 prefund,
+        uint256 deadline,
+        PaymasterInfo paymasterInfo,
+        AggregationInfo aggregationInfo
+    );
 
     /**
      * returned aggregated signature info.
@@ -150,6 +177,4 @@ interface IEntryPoint is IStakeManager {
      * return value of getSenderAddress
      */
     error SenderAddressResult(address sender);
-
 }
-

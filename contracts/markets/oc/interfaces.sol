@@ -66,3 +66,7 @@ interface ILiquidity {
         view
         returns (uint256 rawBorrowAmount_, uint256 borrowAmount_);
 }
+
+interface IOracle {
+    function getPriceInEth(address token_) external view returns (uint256);
+}

@@ -6,11 +6,21 @@ import "./helpers.sol";
 contract OCMarket is Helpers {
     constructor(
         address liquidityAddr_,
+        address oracleAddr_,
         address wethAddr_,
         address usdcAddr_,
         address daiAddr_,
         address wbtcAddr_
-    ) Helpers(liquidityAddr_, wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_) {
+    )
+        Helpers(
+            liquidityAddr_,
+            oracleAddr_,
+            wethAddr_,
+            usdcAddr_,
+            daiAddr_,
+            wbtcAddr_
+        )
+    {
         _status = 1;
     }
 
@@ -26,7 +36,7 @@ contract OCMarket is Helpers {
         uint256 amount_,
         address for_
     ) external nonReentrant {
-        uint256 assetIndex_ = getAssetIndex(token_);
+        uint256 assetIndex_ = getAssetToIndex(token_);
 
         (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.supply(
             token_,
@@ -60,7 +70,7 @@ contract OCMarket is Helpers {
         uint256 amount_,
         address to_
     ) external nonReentrant {
-        uint256 assetIndex_ = getAssetIndex(token_);
+        uint256 assetIndex_ = getAssetToIndex(token_);
 
         (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.withdraw(
             token_,
@@ -102,7 +112,7 @@ contract OCMarket is Helpers {
         uint256 amount_,
         address to_
     ) external nonReentrant {
-        uint256 assetIndex_ = getAssetIndex(token_);
+        uint256 assetIndex_ = getAssetToIndex(token_);
 
         (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.borrow(
             token_,
@@ -138,7 +148,7 @@ contract OCMarket is Helpers {
         uint256 amount_,
         address for_
     ) external nonReentrant {
-        uint256 assetIndex_ = getAssetIndex(token_);
+        uint256 assetIndex_ = getAssetToIndex(token_);
 
         (uint256 oldRawAmount_, uint256 newRawAmount_, , ) = LIQUIDITY.payback(
             token_,

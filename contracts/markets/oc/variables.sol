@@ -5,6 +5,7 @@ import "./interfaces.sol";
 
 contract Variables {
     ILiquidity internal immutable LIQUIDITY;
+    IOracle internal immutable ORACLE;
 
     // TOKENS
     // weth
@@ -57,12 +58,14 @@ contract Variables {
 
     constructor(
         address liquidityAddr_,
+        address oracleAddr_,
         address wethAddr_,
         address usdcAddr_,
         address daiAddr_,
         address wbtcAddr_
     ) {
         LIQUIDITY = ILiquidity(liquidityAddr_);
+        ORACLE = IOracle(oracleAddr_);
         WETH_ADDR = wethAddr_;
         WETH_DECIMALS = IERC20(WETH_ADDR).decimals();
         USDC_ADDR = usdcAddr_;

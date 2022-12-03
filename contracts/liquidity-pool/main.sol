@@ -10,9 +10,9 @@ contract AdminModule is Helpers {
         address usdcAddr_,
         address daiAddr_,
         address wbtcAddr_,
-        address lenders_,
+        address oc_,
         address uc_
-    ) Helpers(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, lenders_, uc_) {}
+    ) Helpers(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, oc_, uc_) {}
 
     modifier onlyAuth() {
         if (msg.sender != auth) revert("only-auth");
@@ -92,9 +92,9 @@ contract Internals is AdminModule {
         address usdcAddr_,
         address daiAddr_,
         address wbtcAddr_,
-        address lenders_,
+        address oc_,
         address uc_
-    ) AdminModule(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, lenders_, uc_) {}
+    ) AdminModule(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, oc_, uc_) {}
 
     function updateStorage(
         address token_,
@@ -255,7 +255,7 @@ contract Internals is AdminModule {
     }
 }
 
-contract LiquidityPool is Internals {
+contract LiquidityPoolImplementation is Internals {
     using SafeERC20 for IERC20;
 
     constructor(
@@ -263,13 +263,9 @@ contract LiquidityPool is Internals {
         address usdcAddr_,
         address daiAddr_,
         address wbtcAddr_,
-        address lenders_,
-        address uc_,
-        address auth_
-    ) payable Internals(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, lenders_, uc_) {
-        auth = auth_;
-        _status = 1;
-    }
+        address oc_,
+        address uc_
+    ) payable Internals(wethAddr_, usdcAddr_, daiAddr_, wbtcAddr_, oc_, uc_) {}
 
     function supply(
         address token_,
@@ -369,5 +365,11 @@ contract LiquidityPool is Internals {
         ) = updateStorage(token_, 0, -int256(amount_));
 
         emit paybackLog(msg.sender, token_, amount_, from_);
+    }
+
+    function initialize(address auth_) external {
+        if (_status != 0) revert("only-once");
+        auth = auth_;
+        _status = 1;
     }
 }

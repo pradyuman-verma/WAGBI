@@ -90,6 +90,10 @@ contract Variables {
     uint256 internal constant WBTC_CF = 9000; // 10000 = 100%
     uint256 internal constant WBTC_DF = 9000; // 10000 = 100%
 
+    // hf thresholds
+    uint256 internal constant MIN_HF_THRESHOLD = 1e18; // User can make position with hf only above this threshold
+    uint256 internal constant MIN_HF_LIQUIDATION_THRESHOLD = 1e18; // User becomes liquidatable if hf falls below this threshold
+
     // STORAGE VARIABLES
 
     // User position mapping stored in bits

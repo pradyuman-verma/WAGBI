@@ -27,8 +27,9 @@ contract Variables {
     uint256 internal immutable WBTC_DECIMALS;
     uint256 internal constant WBTC_INDEX = 3;
 
-    // storage variables
+    // STORAGE VARIABLES
 
+    // status = 2 throws
     uint256 internal _status;
 
     // User Supply and Borrow amounts data

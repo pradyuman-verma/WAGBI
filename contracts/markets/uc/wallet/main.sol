@@ -47,7 +47,6 @@ contract UCMarket is Helpers {
         bool fromWallet_
     ) external onlyAuth {
         if (amount_ == 0) revert("zero-amount");
-
         uint256 assetIndex_ = getAssetIndex(token_);
 
         bool addToSupplyTokens_;
@@ -91,7 +90,6 @@ contract UCMarket is Helpers {
 
     function supplyToWallet(address token_, uint256 amount_) external onlyAuth {
         if (amount_ == 0) revert("zero-amount");
-
         uint256 assetIndex_ = getAssetIndex(token_);
 
         bool addToHoldTokens_;
@@ -116,7 +114,6 @@ contract UCMarket is Helpers {
         address to_
     ) internal {
         if (amount_ == 0) revert("zero-amount");
-
         uint256 assetIndex_ = getAssetIndex(token_);
 
         bool removeFromSupplyTokens_;
@@ -152,5 +149,32 @@ contract UCMarket is Helpers {
         if (to_ != address(this)) {
             // TODO: check hf
         }
+    }
+
+    function withdrawFromWallet(
+        address token_,
+        uint256 amount_,
+        address to_
+    ) external onlyAuth {
+        if (amount_ == 0) revert("zero-amount");
+        uint256 assetIndex_ = getAssetIndex(token_);
+
+        bool removeFromHoldTokens_;
+
+        uint256 maxAmount_ = IERC20(token_).balanceOf(address(this));
+        if (amount_ == type(uint256).max) amount_ = maxAmount_;
+        if (amount_ > maxAmount_) revert("excess-withdraw");
+        if (amount_ == maxAmount_) {
+            removeFromHoldTokens_ = true;
+        }
+
+        IERC20(token_).transfer(to_, amount_);
+
+        if (removeFromHoldTokens_) {
+            uint256 walletData_ = walletData;
+            walletData_ = removeFromHoldTokens(walletData_, assetIndex_);
+            if (walletData_ != walletData) walletData = walletData_;
+        }
+        // TODO: check hf
     }
 }

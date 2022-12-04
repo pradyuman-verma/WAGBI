@@ -364,6 +364,7 @@ contract UIDataProvider {
     }
 
     struct UserUcWalletData {
+        address wallet;
         UserAmountData supplyAmounts;
         UserAmountData supplyAmountsInEth;
         UserAmountData borrowAmounts;
@@ -398,6 +399,8 @@ contract UIDataProvider {
         view
         returns (UserUcWalletData memory userUcWalletData_)
     {
+        userUcWalletData_.wallet = wallet_;
+
         // supply amounts
         (, userUcWalletData_.supplyAmounts.weth) = LIQUIDITY_POOL
             .getUserSupplyAmount(wallet_, WETH_ADDR);

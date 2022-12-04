@@ -19,7 +19,6 @@ contract WagbiWallet is ERC4337, UCMarket {
     // address public auth;
 
     constructor(
-        address owner_,
         address entry_,
         address liquidityPoolAddr_,
         address oracleAddr_,

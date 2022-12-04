@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./helpers.sol";
 import {SafeERC20} from "../dependencies/SafeERC20.sol";
+import "hardhat/console.sol";
 
 contract AdminModule is Helpers {
     constructor(
@@ -20,6 +21,7 @@ contract AdminModule is Helpers {
     }
 
     modifier onlyUCMarket() {
+        console.log("bc");
         require(UC_MARKET_ADDR == msg.sender, "not-a-protocol");
         _;
     }

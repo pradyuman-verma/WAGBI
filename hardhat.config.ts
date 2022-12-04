@@ -35,8 +35,8 @@ const mnemonic =
 
 const networkGasPriceConfig: Record<string, number> = {
   polygon: 50,
-  mumbai: 300,
-  goerli: 10
+  mumbai: 1,
+  goerli: 10,
 };
 
 function createConfig(network: string) {
@@ -54,7 +54,7 @@ function getNetworkUrl(networkType: string) {
     return `https://eth-goerli.g.alchemy.com/v2/${alchemyApiKey}`;
   else if (networkType === "mumbai")
     return `https://polygon-mumbai.g.alchemy.com/v2/${alchemyApiKey}`;
-  else return `https://eth-goerli.g.alchemy.com/v2/${alchemyApiKey}`;
+  else return "http://127.0.0.1:8545/";
 }
 
 /**
@@ -84,6 +84,7 @@ const config: HardhatUserConfig = {
         url: String(getNetworkUrl(String(process.env.networkType))),
         blockNumber: 8031539, // goerli
       },
+      saveDeployments: true,
     },
     mumbai: createConfig("mumbai"),
     polygon: createConfig("polygon"),

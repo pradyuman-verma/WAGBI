@@ -7,6 +7,8 @@ async function main() {
   const usdcAddr = "0x9FD21bE27A2B059a288229361E2fA632D8D2d074";
   const daiAddr = "0x75Ab5AB1Eef154C0352Fc31D2428Cef80C7F8B33";
   const wbtcAddr = "0xf4423F4152966eBb106261740da907662A3569C5";
+  const ENTRY = "0x2DF1592238420ecFe7f2431360e224707e77fA0E";
+  const aaveData = "0x927F584d4321C1dCcBf5e2902368124b02419a1E";
 
   const Poop = await ethers.getContractFactory("LiquidityPoolImplementation");
   const poop = await Poop.deploy(
@@ -44,6 +46,30 @@ async function main() {
 
   console.log("OC deployed at", oc.address);
 
+  const Wallet = await ethers.getContractFactory("WagbiWallet");
+  const wallet = await Wallet.deploy(
+    ENTRY, // entry point
+    pool.address, // LP
+    oracle.address, // oracle
+    aaveData, // aave data provider,
+    wethAddr,
+    usdcAddr,
+    daiAddr,
+    wbtcAddr
+  );
+  await wallet.deployed();
+
+  console.log("wallet deployed at", wallet.address);
+
+  const Factory = await ethers.getContractFactory("UCWalletFactory");
+  const factory = await Factory.deploy(
+    pool.address,
+    wallet.address // wallet
+  );
+  await factory.deployed();
+
+  console.log("factory deployed at", factory.address);
+
   const Poola = await ethers.getContractFactory("LiquidityPoolImplementation");
   const poola = await Poola.deploy(
     wethAddr,
@@ -51,7 +77,7 @@ async function main() {
     daiAddr,
     wbtcAddr,
     oc.address,
-    aaveV2FallbackOracle
+    factory.address
   );
   await poola.deployed();
 
@@ -75,9 +101,4 @@ async function main() {
   console.log("Resolver deployed at", resolver.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main();

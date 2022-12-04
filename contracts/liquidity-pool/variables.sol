@@ -26,13 +26,13 @@ contract Variables {
     uint256 internal immutable WBTC_BORROW_ALLOWANCE;
 
     // RATE CURVE DATA (Common for all tokens for MVP)
-    uint256 internal constant SLOPE_1 = 1189117199;
+    uint256 internal constant SLOPE_1 = 118912;
     uint256 internal constant CONSTANT_1 = 317097919;
     uint256 internal constant SIGN_1 = 1;
     uint256 internal constant KINK = 8000; // 10000 => 100%
-    uint256 internal constant SLOPE_2 = 33834348046;
+    uint256 internal constant SLOPE_2 = 3383435;
     uint256 internal constant CONSTANT_2 = 25789573820;
-    uint256 internal constant SIGN_2 = 1;
+    uint256 internal constant SIGN_2 = 0;
     uint256 internal constant FEE = 1000; // 10000 => 100%
 
     // POOL DATA

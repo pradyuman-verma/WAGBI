@@ -54,7 +54,8 @@ function getNetworkUrl(networkType: string) {
     return `https://eth-goerli.g.alchemy.com/v2/${alchemyApiKey}`;
   else if (networkType === "mumbai")
     return `https://polygon-mumbai.g.alchemy.com/v2/${alchemyApiKey}`;
-  else return "http://127.0.0.1:8545/";
+  // else return "http://127.0.0.1:8545/";
+  else return `https://eth-goerli.g.alchemy.com/v2/${alchemyApiKey}`;
 }
 
 /**
@@ -82,9 +83,8 @@ const config: HardhatUserConfig = {
       chainId: chainIds.hardhat,
       forking: {
         url: String(getNetworkUrl(String(process.env.networkType))),
-        blockNumber: 8031539, // goerli
+        // blockNumber: 8031539, // goerli
       },
-      saveDeployments: true,
     },
     mumbai: createConfig("mumbai"),
     polygon: createConfig("polygon"),

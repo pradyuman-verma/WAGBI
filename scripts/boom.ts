@@ -15,11 +15,12 @@ const create = async () => {
   );
 
   const addr = await signer.getAddress();
-  const tx = await Factory.connect(signer).callStatic.create(addr);
+  const tx = await Factory.connect(signer).create(addr);
+  await tx.wait();
   console.log("🚀 ~ file: boom.ts:19 ~ create ~ tx", tx);
 
-  //   let walletAddress = await Factory.connect(signer).authToWallet(addr, 0);
-  //   console.log("🚀 ~ file: boom.ts:21 ~ create ~ walletAddress", walletAddress);
+  let walletAddress = await Factory.connect(signer).authToWallet(addr);
+  console.log("🚀 ~ file: boom.ts:21 ~ create ~ walletAddress", walletAddress);
 
   //   for (let i = 0; i < walletAddress.length; i++) {
   //     const tx = {

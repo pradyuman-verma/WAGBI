@@ -20,6 +20,15 @@ contract UCWalletFactory {
 
     event createLog(address auth_, address origin_);
 
+    function getUserAddr(address user_)
+        external
+        view
+        returns (address[] memory wallet)
+    {
+        wallet = new address[](10);
+        for (uint256 i; i < 10; i++) wallet[i] = authToWallet[user_][i];
+    }
+
     constructor(address liquidity_, address wallet_) {
         LIQUIDITY = ILiquidity(liquidity_);
         WALLET = wallet_;

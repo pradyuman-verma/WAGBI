@@ -21,7 +21,6 @@ contract AdminModule is Helpers {
     }
 
     modifier onlyUCMarket() {
-        console.log("bc");
         require(UC_MARKET_ADDR == msg.sender, "not-a-protocol");
         _;
     }

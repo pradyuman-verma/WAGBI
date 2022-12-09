@@ -7,36 +7,31 @@ interface IWalletFactory {
 }
 
 interface IWalletImplementation {
-    function supplyLiquidity(
+   function supplyToLiquidityPool(
         address token_,
         uint256 amount_,
-        bool fromOsw_
+        bool fromWallet_
     ) external;
 
-    function supply(address token_, uint256 amount_) external;
+    function supplyToWallet(address token_, uint256 amount_) external;
 
-    function withdrawLiquidity(
-        address token_,
-        uint256 amount_,
-        address to_
-    ) external;
-
-    function withdraw(
+    function withdrawFromLiquidityPool(
         address token_,
         uint256 amount_,
         address to_
     ) external;
 
-    function borrow(address token_, uint256 amount_) external;
+   function withdrawFromWallet(
+        address token_,
+        uint256 amount_,
+        address to_
+    ) external;
+
+    function borrowToWallet(address token_, uint256 amount_) external;
 
     function payback(
         address token_,
         uint256 amount_,
         bool fromOsw_
     ) external;
-
-    function dispatchToPlanet(uint8[] calldata types_, bytes[] calldata params_)
-        external;
-
-    function oswData() external view returns (uint256);
 }

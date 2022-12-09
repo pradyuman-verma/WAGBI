@@ -22,10 +22,7 @@ contract OrbitNftManager is ERC721 {
         POOL = pool_;
     }
 
-    function mint(address recipient_)
-        external
-        returns (address capsule_)
-    {
+    function mint(address recipient_) external returns (address capsule_) {
         capsule_ = WALLET_FACTORY.create(address(this));
         _mint(recipient_, ++tokenId); // no minting of zero
         tokenIdToCapsule[tokenId] = capsule_;
@@ -36,102 +33,7 @@ contract OrbitNftManager is ERC721 {
         _;
     }
 
-    function _auth(address auth_) internal view {
-        require(msg.sender == auth_, "Not-Auth");
-    }
-
-    function supplyLiquidityFromOsw(
-        uint256 tokenId_,
-        address token_,
-        uint256 amount_
-    ) external onlyNftOwner(tokenId_) {
-        address capsule_ = tokenIdToCapsule[tokenId_];
-
-        IWalletImplementation(capsule_).supplyLiquidity(token_, amount_, true);
-    }
-
-    function supplyLiquidity(
-        uint256 tokenId_,
-        address token_,
-        uint256 amount_
-    ) external onlyNftOwner(tokenId_) {
-        address capsule_ = tokenIdToCapsule[tokenId_];
-
-        IERC20(token_).safeTransferFrom(msg.sender, address(this), amount_);
-        IERC20(token_).safeApprove(address(POOL), amount_);
-
-        IWalletImplementation(capsule_).supplyLiquidity(token_, amount_, false);
-    }
-
-    function supply(
-        uint256 tokenId_,
-        address token_,
-        uint256 amount_
-    ) external onlyNftOwner(tokenId_) {
-        address capsule_ = tokenIdToCapsule[tokenId_];
-
-        // get and send amount;
-        IERC20(token_).safeTransferFrom(msg.sender, address(this), amount_);
-        IERC20(token_).safeApprove(capsule_, amount_);
-
-        IWalletImplementation(capsule_).supply(token_, amount_);
-    }
-
-    function withdrawLiquidityToOsw(
-        uint256 tokenId_,
-        address token_,
-        uint256 amount_
-    ) external onlyNftOwner(tokenId_) {
-        address capsule_ = tokenIdToCapsule[tokenId_];
-        IWalletImplementation(capsule_).withdrawLiquidity(
-            token_,
-            amount_,
-            capsule_
-        );
-    }
-
-    function withdrawLiquidity(
-        uint256 tokenId_,
-        address token_,
-        uint256 amount_
-    ) external onlyNftOwner(tokenId_) {
-        address capsule_ = tokenIdToCapsule[tokenId_];
-        IWalletImplementation(capsule_).withdrawLiquidity(
-            token_,
-            amount_,
-            msg.sender
-        );
-    }
-
-    function withdraw(
-        uint256 tokenId_,
-        address token_,
-        uint256 amount_,
-        address to_
-    ) external onlyNftOwner(tokenId_) {
-        address capsule_ = tokenIdToCapsule[tokenId_];
-        IWalletImplementation(capsule_).withdraw(token_, amount_, to_);
-    }
-
-    function borrowToOsw(
-        uint256 tokenId_,
-        address token_,
-        uint256 amount_
-    ) external onlyNftOwner(tokenId_) {
-        address capsule_ = tokenIdToCapsule[tokenId_];
-        IWalletImplementation(capsule_).borrow(token_, amount_);
-    }
-
-    function paybackFromOsw(
-        uint256 tokenId_,
-        address token_,
-        uint256 amount_
-    ) external onlyNftOwner(tokenId_) {
-        address capsule_ = tokenIdToCapsule[tokenId_];
-        IWalletImplementation(capsule_).payback(token_, amount_, true);
-    }
-
-    function payback(
+    function supplyToLiquidityPool(
         uint256 tokenId_,
         address token_,
         uint256 amount_
@@ -139,6 +41,102 @@ contract OrbitNftManager is ERC721 {
         address capsule_ = tokenIdToCapsule[tokenId_];
         IERC20(token_).safeTransferFrom(msg.sender, address(this), amount_);
         IERC20(token_).safeApprove(address(POOL), amount_);
-        IWalletImplementation(capsule_).payback(token_, amount_, false);
+        IWalletImplementation(capsule_).supplyToLiquidityPool(
+            token_,
+            amount_,
+            false
+        );
     }
+
+    // function supplyLiquidity(
+    //     uint256 tokenId_,
+    //     address token_,
+    //     uint256 amount_
+    // ) external onlyNftOwner(tokenId_) {
+    //     address capsule_ = tokenIdToCapsule[tokenId_];
+
+    //     IERC20(token_).safeTransferFrom(msg.sender, address(this), amount_);
+    //     IERC20(token_).safeApprove(address(POOL), amount_);
+
+    //     IWalletImplementation(capsule_).supplyLiquidity(token_, amount_, false);
+    // }
+
+    // function supply(
+    //     uint256 tokenId_,
+    //     address token_,
+    //     uint256 amount_
+    // ) external onlyNftOwner(tokenId_) {
+    //     address capsule_ = tokenIdToCapsule[tokenId_];
+
+    //     // get and send amount;
+    //     IERC20(token_).safeTransferFrom(msg.sender, address(this), amount_);
+    //     IERC20(token_).safeApprove(capsule_, amount_);
+
+    //     IWalletImplementation(capsule_).supply(token_, amount_);
+    // }
+
+    // function withdrawLiquidityToOsw(
+    //     uint256 tokenId_,
+    //     address token_,
+    //     uint256 amount_
+    // ) external onlyNftOwner(tokenId_) {
+    //     address capsule_ = tokenIdToCapsule[tokenId_];
+    //     IWalletImplementation(capsule_).withdrawLiquidity(
+    //         token_,
+    //         amount_,
+    //         capsule_
+    //     );
+    // }
+
+    // function withdrawLiquidity(
+    //     uint256 tokenId_,
+    //     address token_,
+    //     uint256 amount_
+    // ) external onlyNftOwner(tokenId_) {
+    //     address capsule_ = tokenIdToCapsule[tokenId_];
+    //     IWalletImplementation(capsule_).withdrawLiquidity(
+    //         token_,
+    //         amount_,
+    //         msg.sender
+    //     );
+    // }
+
+    // function withdraw(
+    //     uint256 tokenId_,
+    //     address token_,
+    //     uint256 amount_,
+    //     address to_
+    // ) external onlyNftOwner(tokenId_) {
+    //     address capsule_ = tokenIdToCapsule[tokenId_];
+    //     IWalletImplementation(capsule_).withdraw(token_, amount_, to_);
+    // }
+
+    // function borrowToOsw(
+    //     uint256 tokenId_,
+    //     address token_,
+    //     uint256 amount_
+    // ) external onlyNftOwner(tokenId_) {
+    //     address capsule_ = tokenIdToCapsule[tokenId_];
+    //     IWalletImplementation(capsule_).borrow(token_, amount_);
+    // }
+
+    // function paybackFromOsw(
+    //     uint256 tokenId_,
+    //     address token_,
+    //     uint256 amount_
+    // ) external onlyNftOwner(tokenId_) {
+    //     address capsule_ = tokenIdToCapsule[tokenId_];
+    //     IWalletImplementation(capsule_).payback(token_, amount_, true);
+    // }
+
+    // function payback(
+    //     uint256 tokenId_,
+    //     address token_,
+    //     uint256 amount_
+    // ) external onlyNftOwner(tokenId_) {
+    //     address capsule_ = tokenIdToCapsule[tokenId_];
+    //     IERC20(token_).safeTransferFrom(msg.sender, address(this), amount_);
+    //     IERC20(token_).safeApprove(address(POOL), amount_);
+    //     IWalletImplementation(capsule_).payback(token_, amount_, false);
+    // }
 }

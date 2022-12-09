@@ -16,8 +16,6 @@ contract UCWalletFactory {
 
     address internal immutable WALLET;
 
-    mapping(address => address) public authToWallet;
-
     event createLog(address auth_, address origin_);
 
     constructor(address liquidity_, address wallet_) {
@@ -33,8 +31,6 @@ contract UCWalletFactory {
 
         // whitelist user wallet in liquidity pool
         LIQUIDITY.enableUser(walletAddr_);
-
-        authToWallet[auth_] = walletAddr_;
 
         emit createLog(auth_, msg.sender);
     }

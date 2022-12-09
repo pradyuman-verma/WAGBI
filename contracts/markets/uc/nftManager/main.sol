@@ -9,7 +9,7 @@ contract OrbitNftManager is ERC721 {
 
     IWalletFactory internal immutable WALLET_FACTORY;
 
-    IOrbitPool internal immutable POOL;
+    address internal immutable POOL;
 
     uint256 public tokenId;
 
@@ -19,14 +19,14 @@ contract OrbitNftManager is ERC721 {
         ERC721("Orbit Capsules NFT", "ORBIT-CAPSULES")
     {
         WALLET_FACTORY = IWalletFactory(factory_);
-        POOL = IOrbitPool(pool_);
+        POOL = pool_;
     }
 
-    function mint(address recipient_, uint256 version_)
+    function mint(address recipient_)
         external
         returns (address capsule_)
     {
-        capsule_ = WALLET_FACTORY.create(version_, address(this));
+        capsule_ = WALLET_FACTORY.create(address(this));
         _mint(recipient_, ++tokenId); // no minting of zero
         tokenIdToCapsule[tokenId] = capsule_;
     }
@@ -140,37 +140,5 @@ contract OrbitNftManager is ERC721 {
         IERC20(token_).safeTransferFrom(msg.sender, address(this), amount_);
         IERC20(token_).safeApprove(address(POOL), amount_);
         IWalletImplementation(capsule_).payback(token_, amount_, false);
-    }
-
-    function dispatch(
-        uint256 tokenId_,
-        uint8[] calldata types_,
-        bytes[] calldata params_
-    ) external onlyNftOwner(tokenId_) {
-        address capsule_ = tokenIdToCapsule[tokenId_];
-        uint256 type_ = POOL.unpack(
-            IWalletImplementation(capsule_).oswData(),
-            0,
-            5
-        );
-        if (type_ == 0) setOswType(tokenId_, 1);
-        IWalletImplementation(capsule_).dispatchToPlanet(types_, params_);
-    }
-
-    function setOswType(uint256 tokenId_, uint256 type_)
-        internal
-        onlyNftOwner(tokenId_)
-    {
-        address capsule_ = tokenIdToCapsule[tokenId_];
-
-        IWalletImplementation(capsule_).setOswType(type_);
-    }
-
-    function getPosition(address user_, address[] memory tokens_)
-        external
-        view
-        returns (UserData memory userData)
-    {
-        return _getUserOrbitPosition(user_, tokens_);
     }
 }

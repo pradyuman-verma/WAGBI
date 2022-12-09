@@ -34,9 +34,10 @@ const mnemonic =
   "test test test test test test test test test test test junk";
 
 const networkGasPriceConfig: Record<string, number> = {
-  polygon: 50,
+  polygon: 40,
   mumbai: 300,
-  goerli: 10
+  goerli: 0.01,
+  cronos: 5000,
 };
 
 function createConfig(network: string) {
@@ -50,10 +51,13 @@ function createConfig(network: string) {
 }
 
 function getNetworkUrl(networkType: string) {
+  if (networkType === "cronos") return "https://evm-t3.cronos.org";
   if (networkType === "goerli")
     return `https://eth-goerli.g.alchemy.com/v2/${alchemyApiKey}`;
   else if (networkType === "mumbai")
     return `https://polygon-mumbai.g.alchemy.com/v2/${alchemyApiKey}`;
+  else if (networkType === "polygon")
+    return `https://polygon-mainnet.g.alchemy.com/v2/${alchemyApiKey}`;
   else return `https://eth-goerli.g.alchemy.com/v2/${alchemyApiKey}`;
 }
 
@@ -88,6 +92,7 @@ const config: HardhatUserConfig = {
     mumbai: createConfig("mumbai"),
     polygon: createConfig("polygon"),
     goerli: createConfig("goerli"),
+    cronos: createConfig("cronos"),
   },
   paths: {
     artifacts: "./artifacts",

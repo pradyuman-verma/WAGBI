@@ -86,8 +86,8 @@ interface IWallet {
 }
 
 interface IWalletFactory {
-    function authToWallet(address user_)
+    function authToWallet(address user_, uint256 i)
         external
         view
-        returns (address[] memory);
+        returns (address);
 }

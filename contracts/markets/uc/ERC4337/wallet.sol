@@ -48,10 +48,10 @@ contract WagbiWallet is ERC4337, UCMarket {
         _;
     }
 
-    modifier onlyEntryPoint() {
-        require(msg.sender == address(ENTRY_POINT), "not-entry-point");
-        _;
-    }
+    // modifier onlyEntryPoint() {
+    //     require(msg.sender == address(ENTRY_POINT), "not-entry-point");
+    //     _;
+    // }
 
     function nonce() public view virtual override returns (uint256) {
         return wNonce;

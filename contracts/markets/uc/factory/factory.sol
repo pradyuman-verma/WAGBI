@@ -11,7 +11,7 @@ interface Wallet {
     function initializeAuth(address auth_) external;
 }
 
-contract UCWalletFactory {
+contract UCWalletFactoryImplementation {
     ILiquidity immutable LIQUIDITY;
 
     address internal immutable WALLET;

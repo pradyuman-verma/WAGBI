@@ -4,7 +4,7 @@ import "./interfaces.sol";
 import {SafeERC20} from "../../../dependencies/SafeERC20.sol";
 import {ERC721} from "../../../dependencies/ERC721.sol";
 
-contract OrbitNftManager is ERC721 {
+contract NftManagerImplementation is ERC721 {
     using SafeERC20 for IERC20;
 
     IWalletFactory internal immutable WALLET_FACTORY;

@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "./helpers.sol";
 import {SafeERC20} from "../../../../dependencies/SafeERC20.sol";
 
-contract AavePlanet is Helpers {
+contract AaveInteractor is Helpers {
     using SafeERC20 for IERC20;
 
     constructor(

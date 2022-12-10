@@ -8,6 +8,7 @@ contract Variables {
         address liquidityPoolAddr_,
         address oracleAddr_,
         address aaveDataProviderAddr_,
+        address aaveInteractorAddr_,
         address wethAddr_,
         address usdcAddr_,
         address daiAddr_,
@@ -16,6 +17,7 @@ contract Variables {
         LIQUIDITY_POOL = ILiquidityPool(liquidityPoolAddr_);
         ORACLE = IOracle(oracleAddr_);
         AAVE_DATA_PROVIDER = IAaveDataProvider(aaveDataProviderAddr_);
+        AAVE_INTERACTOR_ADDR = aaveInteractorAddr_;
 
         WETH_ADDR = wethAddr_;
         WETH_DECIMALS = IERC20(WETH_ADDR).decimals();
@@ -53,6 +55,7 @@ contract Variables {
     ILiquidityPool internal immutable LIQUIDITY_POOL;
     IOracle internal immutable ORACLE;
     IAaveDataProvider internal immutable AAVE_DATA_PROVIDER;
+    address internal immutable AAVE_INTERACTOR_ADDR;
 
     // eth
     address internal immutable WETH_ADDR;

@@ -20,9 +20,7 @@ contract OCImplementation is Helpers {
             daiAddr_,
             wbtcAddr_
         )
-    {
-        _status = 1;
-    }
+    {}
 
     modifier nonReentrant() {
         require(_status == 1, "ReentrancyGuard: reentrant call");
@@ -170,4 +168,9 @@ contract OCImplementation is Helpers {
     }
 
     // TODO: Liquidate function
+
+    function initialize() external {
+        if (_status != 0) revert("only-once");
+        _status = 1;
+    }
 }

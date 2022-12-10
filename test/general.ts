@@ -1,5 +1,6 @@
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
+import { SignerWithAddress } from "hardhat-deploy-ethers/signers";
 import { liquidityPool } from "../typechain/contracts";
 const { expect } = require("chai");
 
@@ -14,14 +15,23 @@ describe("General", function () {
 
   const fakeContract = aaveV2LendingPool;
 
-  let deployer,
-    proxyAdmin: Contract,
+  let deployer: any;
+
+  let proxyAdmin: Contract,
     liquidityPool: Contract,
     oracle: Contract,
     oc: Contract,
     ucFactory: Contract,
     nftManager: Contract,
     ucWallet: Contract;
+
+  let liquidityPoolImplementation: Contract,
+    oracleImplementation: Contract,
+    ocImplementation: Contract,
+    ucFactoryImplementation: Contract,
+    nftManagerImplementation: Contract,
+    ucWalletImplementation: Contract;
+
   before(async () => {
     [deployer] = await ethers.getSigners();
 
@@ -31,6 +41,11 @@ describe("General", function () {
     await proxyAdmin.deployed();
     console.log("Proxy Admin deployed at:", proxyAdmin.address);
 
+    const Oracle = await ethers.getContractFactory("Oracle");
+    oracle = await Oracle.deploy(fakeContract, proxyAdmin.address, "0x");
+    await oracle.deployed();
+    console.log("Oracle deployed at:", oracle.address);
+
     const LiquidityPool = await ethers.getContractFactory("LiquidityPool");
     liquidityPool = await LiquidityPool.deploy(
       fakeContract,
@@ -39,11 +54,6 @@ describe("General", function () {
     );
     await liquidityPool.deployed();
     console.log("Liquidity Pool deployed at:", liquidityPool.address);
-
-    const Oracle = await ethers.getContractFactory("Oracle");
-    oracle = await Oracle.deploy(fakeContract, proxyAdmin.address, "0x");
-    await oracle.deployed();
-    console.log("Oracle deployed at:", oracle.address);
 
     const OC = await ethers.getContractFactory("OC");
     oc = await OC.deploy(fakeContract, proxyAdmin.address, "0x");
@@ -72,7 +82,7 @@ describe("General", function () {
     // implementations
   });
 
-  it("should deploy", async () => {
+  it("should deploy proxies", async () => {
     expect(!!proxyAdmin.address).to.equal(true);
     expect(!!liquidityPool.address).to.equal(true);
     expect(!!oracle.address).to.equal(true);
@@ -80,5 +90,77 @@ describe("General", function () {
     expect(!!ucFactory.address).to.equal(true);
     expect(!!nftManager.address).to.equal(true);
     expect(!!ucWallet.address).to.equal(true);
+  });
+
+  it("should setup oracle", async () => {
+    const OracleImplementation = await ethers.getContractFactory(
+      "OracleImplementation"
+    );
+    oracleImplementation = await OracleImplementation.deploy(
+      aaveV2FallbackOracle
+    );
+    await oracleImplementation.deployed();
+    console.log(
+      "Oracle implementation deployed at:",
+      oracleImplementation.address
+    );
+
+    await proxyAdmin.upgrade(oracle.address, oracleImplementation.address);
+    console.log("Oracle implementation upgraded!");
+  });
+
+  it("should setup liquidity pool", async () => {
+    const LiquidityPoolImplementation = await ethers.getContractFactory(
+      "LiquidityPoolImplementation"
+    );
+    liquidityPoolImplementation = await LiquidityPoolImplementation.deploy(
+      wethAddr,
+      usdcAddr,
+      daiAddr,
+      wbtcAddr,
+      oc.address,
+      ucFactory.address
+    );
+    await liquidityPoolImplementation.deployed();
+    console.log(
+      "Liquidity Pool implementation deployed at:",
+      liquidityPoolImplementation.address
+    );
+
+    await proxyAdmin.upgrade(
+      liquidityPool.address,
+      liquidityPoolImplementation.address
+    );
+    console.log("Liquidity Pool implementation upgraded!");
+
+    const liquidityPoolProxy = await ethers.getContractAt(
+      "LiquidityPoolImplementation",
+      liquidityPool.address
+    );
+    await liquidityPoolProxy.initialize(deployer.address);
+    console.log("Liquidity Pool initialized!");
+  });
+
+  it("should setup oc", async () => {
+    const OCImplementation = await ethers.getContractFactory(
+      "OCImplementation"
+    );
+    ocImplementation = await OCImplementation.deploy(
+      liquidityPool.address,
+      oracle.address,
+      wethAddr,
+      usdcAddr,
+      daiAddr,
+      wbtcAddr
+    );
+    await ocImplementation.deployed();
+    console.log("OC implementation deployed at:", ocImplementation.address);
+
+    await proxyAdmin.upgrade(oc.address, ocImplementation.address);
+    console.log("OC implementation upgraded!");
+
+    const ocProxy = await ethers.getContractAt("OCImplementation", oc.address);
+    await ocProxy.initialize();
+    console.log("OC initialized!");
   });
 });

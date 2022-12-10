@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./helpers.sol";
 
-contract OCMarket is Helpers {
+contract OCImplementation is Helpers {
     constructor(
         address liquidityPoolAddr_,
         address oracleAddr_,

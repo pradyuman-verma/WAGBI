@@ -433,23 +433,23 @@ contract UIDataProvider {
         );
 
         // aave supply amounts
-        nftData_.holdAmounts.weth = IERC20(AAVE_WETH_COLLATERAL_TOKEN_ADDR)
+        nftData_.aaveSupplyAmounts.weth = IERC20(AAVE_WETH_COLLATERAL_TOKEN_ADDR)
             .balanceOf(nftData_.wallet);
-        nftData_.holdAmounts.usdc = IERC20(AAVE_USDC_COLLATERAL_TOKEN_ADDR)
+        nftData_.aaveSupplyAmounts.usdc = IERC20(AAVE_USDC_COLLATERAL_TOKEN_ADDR)
             .balanceOf(nftData_.wallet);
-        nftData_.holdAmounts.dai = IERC20(AAVE_DAI_COLLATERAL_TOKEN_ADDR)
+        nftData_.aaveSupplyAmounts.dai = IERC20(AAVE_DAI_COLLATERAL_TOKEN_ADDR)
             .balanceOf(nftData_.wallet);
-        nftData_.holdAmounts.wbtc = IERC20(AAVE_WBTC_COLLATERAL_TOKEN_ADDR)
+        nftData_.aaveSupplyAmounts.wbtc = IERC20(AAVE_WBTC_COLLATERAL_TOKEN_ADDR)
             .balanceOf(nftData_.wallet);
 
         // aave borrow amounts
-        nftData_.holdAmounts.weth = IERC20(AAVE_WETH_VARIABLE_DEBT_TOKEN_ADDR)
+        nftData_.aaveBorrowAmounts.weth = IERC20(AAVE_WETH_VARIABLE_DEBT_TOKEN_ADDR)
             .balanceOf(nftData_.wallet);
-        nftData_.holdAmounts.usdc = IERC20(AAVE_USDC_VARIABLE_DEBT_TOKEN_ADDR)
+        nftData_.aaveBorrowAmounts.usdc = IERC20(AAVE_USDC_VARIABLE_DEBT_TOKEN_ADDR)
             .balanceOf(nftData_.wallet);
-        nftData_.holdAmounts.dai = IERC20(AAVE_DAI_VARIABLE_DEBT_TOKEN_ADDR)
+        nftData_.aaveBorrowAmounts.dai = IERC20(AAVE_DAI_VARIABLE_DEBT_TOKEN_ADDR)
             .balanceOf(nftData_.wallet);
-        nftData_.holdAmounts.wbtc = IERC20(AAVE_WBTC_VARIABLE_DEBT_TOKEN_ADDR)
+        nftData_.aaveBorrowAmounts.wbtc = IERC20(AAVE_WBTC_VARIABLE_DEBT_TOKEN_ADDR)
             .balanceOf(nftData_.wallet);
 
         // prices

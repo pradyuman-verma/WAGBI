@@ -281,7 +281,9 @@ contract Helpers is Variables {
             uint256 normalizedCollateralInEth_,
             uint256 normalizedDebtInEth_
         ) = getHfData();
-        hf_ = (normalizedCollateralInEth_ * 1e18) / normalizedDebtInEth_;
+        hf_ = normalizedDebtInEth_ == 0
+            ? type(uint256).max
+            : (normalizedCollateralInEth_ * 1e18) / normalizedDebtInEth_;
     }
 
     function checkHf() internal view {

@@ -9,11 +9,11 @@ describe("General", function () {
   const aaveV2FallbackOracle = "0x0F9d5ED72f6691E47abe2f79B890C3C33e924092";
   const aaveV2DataProvider = "0x927F584d4321C1dCcBf5e2902368124b02419a1E";
 
-  const aaveV2FaucetAddr = "0x1ca525Cd5Cb77DB5Fa9cBbA02A0824e283469DBe";
-  const aaveV2WbtcFaucetAddr = "0x681860075529352da2C94082Eb66c59dF958e89C";
+  const aaveV2FaucetAddr = "0x681860075529352da2C94082Eb66c59dF958e89C";
+
   const wethAddr = "0xCCa7d1416518D095E729904aAeA087dBA749A4dC";
-  const usdcAddr = "0xA2025B15a1757311bfD68cb14eaeFCc237AF5b43";
-  const daiAddr = "0xDF1742fE5b0bFc12331D8EAec6b478DfDbD31464";
+  const usdcAddr = "0x9FD21bE27A2B059a288229361E2fA632D8D2d074";
+  const daiAddr = "0x75Ab5AB1Eef154C0352Fc31D2428Cef80C7F8B33";
   const wbtcAddr = "0xf4423F4152966eBb106261740da907662A3569C5";
 
   const wethAmount = ethers.utils.parseUnits("10000", "18");
@@ -90,12 +90,7 @@ describe("General", function () {
     console.log("UC wallet deployed at:", ucWallet.address);
 
     const Faucet = await ethers.getContractFactory("Faucet");
-    faucet = await Faucet.deploy(
-      aaveV2FaucetAddr,
-      wethAddr,
-      wbtcAddr,
-      aaveV2WbtcFaucetAddr
-    );
+    faucet = await Faucet.deploy(aaveV2FaucetAddr, wethAddr);
     await faucet.deployed();
     console.log("Faucet deployed at:", faucet.address);
   });
@@ -347,14 +342,14 @@ describe("General", function () {
     data = await uiDataProvider.getPrices();
     console.log("Prices:", data);
 
+    data = await uiDataProvider.getUserBalances(deployer.address);
+    console.log("Balances:", data);
+
     data = await uiDataProvider.getLiquidityPoolData();
     console.log("Liquidity Pool data:", data);
 
     data = await uiDataProvider.getAavePoolData();
     console.log("Aave Pool data:", data);
-
-    data = await uiDataProvider.getUserBalances(deployer.address);
-    console.log("Balances:", data);
 
     data = await uiDataProvider.getUserOCData(deployer.address);
     console.log("OC data:", data);

@@ -18,10 +18,6 @@ contract Faucet {
 
     IWethFaucet internal immutable WETH_FAUCET;
 
-    IFaucet internal immutable WBTC_FAUCET;
-
-    address internal immutable WBTC_ADDR;
-
     function mint(
         address token_,
         uint256 amount_,
@@ -29,8 +25,6 @@ contract Faucet {
     ) external {
         if (token_ == address(WETH_FAUCET)) {
             WETH_FAUCET.mint(amount_);
-        } else if (token_ == WBTC_ADDR) {
-            WBTC_FAUCET.mint(token_, amount_);
         } else {
             FAUCET.mint(token_, amount_);
         }
@@ -39,13 +33,9 @@ contract Faucet {
 
     constructor(
         address faucetAddr_,
-        address wethAddr_,
-        address wbtcAddr_,
-        address wbtcFaucetAddr_
+        address wethAddr_
     ) payable {
         FAUCET = IFaucet(faucetAddr_);
         WETH_FAUCET = IWethFaucet(wethAddr_);
-        WBTC_ADDR = wbtcAddr_;
-        WBTC_FAUCET = IFaucet(wbtcFaucetAddr_);
     }
 }

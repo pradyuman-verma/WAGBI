@@ -100,5 +100,8 @@ interface INftManager {
         view
         returns (uint256 tokenId_);
 
-    function tokenIdToCapsule(uint256 tokenId_) external view returns (address);
+    function getTokenIdToCapsule(uint256 tokenId_)
+        external
+        view
+        returns (address capsule_);
 }

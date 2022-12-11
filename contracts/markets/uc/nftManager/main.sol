@@ -22,6 +22,14 @@ contract NftManagerImplementation is ERC721 {
         POOL = pool_;
     }
 
+    function getTokenIdToCapsule(uint256 tokenId_)
+        external
+        view
+        returns (address capsuleAddr_)
+    {
+        capsuleAddr_ = tokenIdToCapsule[tokenId_];
+    }
+
     function mint(address recipient_) external returns (address capsule_) {
         capsule_ = WALLET_FACTORY.create(address(this));
         _mint(recipient_, ++tokenId); // no minting of zero

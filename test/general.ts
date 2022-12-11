@@ -8,10 +8,18 @@ describe("General", function () {
   const aaveV2LendingPool = "0x4bd5643ac6f66a5237E18bfA7d47cF22f1c9F210";
   const aaveV2FallbackOracle = "0x0F9d5ED72f6691E47abe2f79B890C3C33e924092";
   const aaveV2DataProvider = "0x927F584d4321C1dCcBf5e2902368124b02419a1E";
+
+  const aaveV2FaucetAddr = "0x1ca525Cd5Cb77DB5Fa9cBbA02A0824e283469DBe";
+  const aaveV2WbtcFaucetAddr = "0x681860075529352da2C94082Eb66c59dF958e89C";
   const wethAddr = "0xCCa7d1416518D095E729904aAeA087dBA749A4dC";
-  const usdcAddr = "0x9FD21bE27A2B059a288229361E2fA632D8D2d074";
-  const daiAddr = "0x75Ab5AB1Eef154C0352Fc31D2428Cef80C7F8B33";
+  const usdcAddr = "0xA2025B15a1757311bfD68cb14eaeFCc237AF5b43";
+  const daiAddr = "0xDF1742fE5b0bFc12331D8EAec6b478DfDbD31464";
   const wbtcAddr = "0xf4423F4152966eBb106261740da907662A3569C5";
+
+  const wethAmount = ethers.utils.parseUnits("10000", "18");
+  const usdcAmount = ethers.utils.parseUnits("1000000", "6");
+  const daiAmount = ethers.utils.parseUnits("1000000", "18");
+  const wbtcAmount = ethers.utils.parseUnits("100", "8");
 
   const fakeContract = aaveV2LendingPool;
 
@@ -30,8 +38,9 @@ describe("General", function () {
     ocImplementation: Contract,
     ucFactoryImplementation: Contract,
     nftManagerImplementation: Contract,
-    ucWalletImplementation: Contract,
-    aaveInteractor: Contract;
+    ucWalletImplementation: Contract;
+
+  let aaveInteractor: Contract, faucet: Contract;
 
   before(async () => {
     [deployer] = await ethers.getSigners();
@@ -80,7 +89,15 @@ describe("General", function () {
     await ucWallet.deployed();
     console.log("UC wallet deployed at:", ucWallet.address);
 
-    // implementations
+    const Faucet = await ethers.getContractFactory("Faucet");
+    faucet = await Faucet.deploy(
+      aaveV2FaucetAddr,
+      wethAddr,
+      wbtcAddr,
+      aaveV2WbtcFaucetAddr
+    );
+    await faucet.deployed();
+    console.log("Faucet deployed at:", faucet.address);
   });
 
   it("should deploy proxies", async () => {
@@ -91,6 +108,7 @@ describe("General", function () {
     expect(!!ucFactory.address).to.equal(true);
     expect(!!nftManager.address).to.equal(true);
     expect(!!ucWallet.address).to.equal(true);
+    expect(!!faucet.address).to.equal(true);
   });
 
   it("should setup oracle", async () => {
@@ -140,6 +158,24 @@ describe("General", function () {
     );
     await liquidityPoolProxy.initialize(deployer.address);
     console.log("Liquidity Pool initialized!");
+
+    await liquidityPoolProxy.updateProtocolParams(
+      oc.address,
+      [wethAddr, usdcAddr, daiAddr, wbtcAddr],
+      [1, 1, 1, 1],
+      [wethAddr, usdcAddr, daiAddr, wbtcAddr],
+      [wethAmount, usdcAmount, daiAmount, wbtcAmount]
+    );
+    console.log("OC params set!");
+
+    await liquidityPoolProxy.updateProtocolParams(
+      ucFactory.address,
+      [wethAddr, usdcAddr, daiAddr, wbtcAddr],
+      [1, 1, 1, 1],
+      [wethAddr, usdcAddr, daiAddr, wbtcAddr],
+      [wethAmount, usdcAmount, daiAmount, wbtcAmount]
+    );
+    console.log("UC params set!");
   });
 
   it("should setup oc", async () => {
@@ -227,7 +263,7 @@ describe("General", function () {
       "NftManagerImplementation"
     );
     nftManagerImplementation = await NftManagerImplementation.deploy(
-      nftManager.address,
+      ucFactory.address,
       liquidityPool.address
     );
     await nftManagerImplementation.deployed();
@@ -236,7 +272,37 @@ describe("General", function () {
       nftManagerImplementation.address
     );
 
-    await proxyAdmin.upgrade(nftManager.address, nftManagerImplementation.address);
+    await proxyAdmin.upgrade(
+      nftManager.address,
+      nftManagerImplementation.address
+    );
     console.log("Nft manager implementation upgraded!");
+  });
+
+  it("should supply in oc", async () => {
+    const amount = ethers.utils.parseUnits("100", "18");
+    await faucet.mint(daiAddr, amount, deployer.address);
+
+    const daiToken = await ethers.getContractAt("IERC20", daiAddr);
+    await daiToken.approve(liquidityPool.address, amount);
+
+    const ocProxy = await ethers.getContractAt("OCImplementation", oc.address);
+    await ocProxy.supply(daiAddr, amount, deployer.address);
+  });
+
+  it("should supply in uc", async () => {
+    const amount = ethers.utils.parseUnits("100", "18");
+    await faucet.mint(daiAddr, amount, deployer.address);
+
+    const daiToken = await ethers.getContractAt("IERC20", daiAddr);
+    await daiToken.approve(nftManager.address, amount);
+
+    const nftManagerProxy = await ethers.getContractAt(
+      "NftManagerImplementation",
+      nftManager.address
+    );
+    await nftManagerProxy.mint(deployer.address);
+
+    await nftManagerProxy.supplyToLiquidityPool(1, daiAddr, amount);
   });
 });

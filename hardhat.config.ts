@@ -86,7 +86,7 @@ const config: HardhatUserConfig = {
       chainId: chainIds.hardhat,
       forking: {
         url: String(getNetworkUrl(String(process.env.networkType))),
-        blockNumber: 8031539, // goerli
+        blockNumber: 8117377, // goerli
       },
     },
     mumbai: createConfig("mumbai"),

@@ -7,7 +7,7 @@ interface IWalletFactory {
 }
 
 interface IWalletImplementation {
-   function supplyToLiquidityPool(
+    function supplyToLiquidityPool(
         address token_,
         uint256 amount_,
         bool fromWallet_
@@ -21,7 +21,7 @@ interface IWalletImplementation {
         address to_
     ) external;
 
-   function withdrawFromWallet(
+    function withdrawFromWallet(
         address token_,
         uint256 amount_,
         address to_
@@ -34,4 +34,6 @@ interface IWalletImplementation {
         uint256 amount_,
         bool fromOsw_
     ) external;
+
+    function useAave(bytes calldata params_) external;
 }

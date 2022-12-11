@@ -305,4 +305,24 @@ describe("General", function () {
 
     await nftManagerProxy.supplyToLiquidityPool(1, daiAddr, amount);
   });
+
+  it("should supply in uc-aave", async () => {
+    const amount = ethers.utils.parseUnits("100", "18");
+    await faucet.mint(daiAddr, amount, deployer.address);
+
+    const daiToken = await ethers.getContractAt("IERC20", daiAddr);
+    await daiToken.approve(nftManager.address, amount);
+
+    const nftManagerProxy = await ethers.getContractAt(
+      "NftManagerImplementation",
+      nftManager.address
+    );
+    await nftManagerProxy.supplyToWallet(1, daiAddr, amount);
+
+    const ABI = ["function deposit(address,uint256)"];
+    const iface = new ethers.utils.Interface(ABI);
+    const data = iface.encodeFunctionData("deposit", [daiAddr, amount]);
+
+    await nftManagerProxy.useAave(1, data);
+  });
 });

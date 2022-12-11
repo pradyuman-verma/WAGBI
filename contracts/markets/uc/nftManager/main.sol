@@ -129,4 +129,12 @@ contract NftManagerImplementation is ERC721 {
         IERC20(token_).safeApprove(address(POOL), amount_);
         IWalletImplementation(capsule_).payback(token_, amount_, false);
     }
+
+    function useAave(uint256 tokenId_, bytes calldata params_)
+        external
+        onlyNftOwner(tokenId_)
+    {
+        address capsule_ = tokenIdToCapsule[tokenId_];
+        IWalletImplementation(capsule_).useAave(params_);
+    }
 }

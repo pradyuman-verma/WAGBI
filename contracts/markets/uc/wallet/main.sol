@@ -38,7 +38,7 @@ contract UCWalletImplementation is Helpers {
     }
 
     modifier onlyAuth() {
-        if (auth == msg.sender) revert("only-auth");
+        if (auth != msg.sender) revert("only-auth");
         _;
     }
 

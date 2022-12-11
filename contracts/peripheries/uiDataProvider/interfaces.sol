@@ -91,3 +91,12 @@ interface IWalletFactory {
         view
         returns (address);
 }
+
+interface INftManager {
+    function balanceOf(address user_) external view returns (uint256 balance_);
+
+    function tokenOfOwnerByIndex(address user_, uint256 index_)
+        external
+        view
+        returns (uint256 tokenId_);
+}

@@ -243,6 +243,7 @@ async function main() {
   uiDataProvider = await UIDataProvider.deploy(
     liquidityPool.address,
     oc.address,
+    nftManager.address,
     oracle.address,
     aaveV2DataProvider,
     ucFactory.address,

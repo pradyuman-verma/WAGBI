@@ -8,6 +8,7 @@ import "hardhat/console.sol";
 contract UIDataProvider {
     ILiquidityPool internal immutable LIQUIDITY_POOL;
     IOC internal immutable OC_MARKET;
+    INftManager internal immutable NFT_MANAGER;
     IOracle internal immutable ORACLE;
     IAaveDataProvider internal immutable AAVE_DATA_PROVIDER;
     IWalletFactory internal immutable UC_WALLET_FACTORY;
@@ -29,6 +30,7 @@ contract UIDataProvider {
     constructor(
         address liquidityPoolAddr_,
         address ocMarketAddr_,
+        address nftManagerAddr_,
         address oracle_,
         address aaveDataProvider_,
         address ucWalletFactory_,
@@ -40,6 +42,7 @@ contract UIDataProvider {
     ) payable {
         LIQUIDITY_POOL = ILiquidityPool(liquidityPoolAddr_);
         OC_MARKET = IOC(ocMarketAddr_);
+        NFT_MANAGER = INftManager(nftManagerAddr_);
         ORACLE = IOracle(oracle_);
         AAVE_DATA_PROVIDER = IAaveDataProvider(aaveDataProvider_);
         UC_WALLET_FACTORY = IWalletFactory(ucWalletFactory_);
@@ -346,6 +349,17 @@ contract UIDataProvider {
             : numerator_ / int256(denominator_);
 
         userOcData_.healthFactor = OC_MARKET.getHf(user_);
+    }
+
+    function getUserNftIds(address user_)
+        public
+        view
+        returns (uint256[] memory tokenIds_)
+    {
+        uint256 len_ = NFT_MANAGER.balanceOf(user_);
+        tokenIds_ = new uint256[](len_);
+        for (uint256 i; i < len_; i++)
+            tokenIds_[i] = NFT_MANAGER.tokenOfOwnerByIndex(user_, i);
     }
 
     // struct UserUcWalletData {

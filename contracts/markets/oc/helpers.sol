@@ -213,7 +213,9 @@ contract Helpers is Variables {
             uint256 normalizedDebtInEth_
         ) = getHfData(user_, userTokensData_);
 
-        hf_ = (normalizedCollateralInEth_ * 1e18) / normalizedDebtInEth_;
+        hf_ = normalizedDebtInEth_ == 0
+            ? type(uint256).max
+            : (normalizedCollateralInEth_ * 1e18) / normalizedDebtInEth_;
     }
 
     function getHf(address user_) public view returns (uint256 hf_) {

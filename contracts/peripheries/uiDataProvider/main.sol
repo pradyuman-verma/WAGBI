@@ -268,9 +268,9 @@ contract UIDataProvider {
 
         // total supply in usd
         // in 18 decimals
-        userOcData_.totalSupplyInUsd =
-            (totalSupplyInEth_ * 1e18) /
-            pricesInEth_.usdc;
+        userOcData_.totalSupplyInUsd = pricesInEth_.usdc == 0
+            ? 0
+            : (totalSupplyInEth_ * 1e18) / pricesInEth_.usdc;
 
         // borrow amounts in eth
         UserAmountData memory borrowAmountsInEth_;
@@ -296,9 +296,9 @@ contract UIDataProvider {
 
         // total borrow in usd
         // in 18 decimals
-        userOcData_.totalBorrowInUsd =
-            (totalBorrowInEth_ * 1e18) /
-            pricesInEth_.usdc;
+        userOcData_.totalBorrowInUsd = pricesInEth_.usdc == 0
+            ? 0
+            : (totalBorrowInEth_ * 1e18) / pricesInEth_.usdc;
 
         // net apy calc
         // numerator
@@ -341,7 +341,9 @@ contract UIDataProvider {
         // denominator
         uint256 denominator_ = totalSupplyInEth_ - totalBorrowInEth_;
 
-        userOcData_.netApy = numerator_ / int256(denominator_);
+        userOcData_.netApy = denominator_ == 0
+            ? int256(0)
+            : numerator_ / int256(denominator_);
 
         userOcData_.healthFactor = OC_MARKET.getHf(user_);
     }

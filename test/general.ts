@@ -40,7 +40,7 @@ describe("General", function () {
     nftManagerImplementation: Contract,
     ucWalletImplementation: Contract;
 
-  let aaveInteractor: Contract, faucet: Contract;
+  let aaveInteractor: Contract, faucet: Contract, uiDataProvider: Contract;
 
   before(async () => {
     [deployer] = await ethers.getSigners();
@@ -324,5 +324,39 @@ describe("General", function () {
     const data = iface.encodeFunctionData("deposit", [daiAddr, amount]);
 
     await nftManagerProxy.useAave(1, data);
+  });
+
+  it("should return data", async () => {
+    const UIDataProvider = await ethers.getContractFactory("UIDataProvider");
+    uiDataProvider = await UIDataProvider.deploy(
+      liquidityPool.address,
+      oc.address,
+      oracle.address,
+      aaveV2DataProvider,
+      ucFactory.address,
+      aaveV2LendingPool,
+      wethAddr,
+      usdcAddr,
+      daiAddr,
+      wbtcAddr
+    );
+    await uiDataProvider.deployed();
+    console.log("UI data provider deployed at:", uiDataProvider.address);
+
+    let data;
+    data = await uiDataProvider.getPrices();
+    console.log("Prices:", data);
+
+    data = await uiDataProvider.getLiquidityPoolData();
+    console.log("Liquidity Pool data:", data);
+
+    data = await uiDataProvider.getAavePoolData();
+    console.log("Aave Pool data:", data);
+
+    data = await uiDataProvider.getUserBalances(deployer.address);
+    console.log("Balances:", data);
+
+    data = await uiDataProvider.getUserOCData(deployer.address);
+    console.log("OC data:", data);
   });
 });

@@ -3,8 +3,6 @@ pragma solidity ^0.8.0;
 
 import "./interfaces.sol";
 
-import "hardhat/console.sol";
-
 contract UIDataProvider {
     ILiquidityPool internal immutable LIQUIDITY_POOL;
     IOC internal immutable OC_MARKET;
@@ -362,390 +360,343 @@ contract UIDataProvider {
             tokenIds_[i] = NFT_MANAGER.tokenOfOwnerByIndex(user_, i);
     }
 
-    // struct UserUcWalletData {
-    //     address wallet;
-    //     UserAmountData supplyAmounts;
-    //     UserAmountData supplyAmountsInEth;
-    //     UserAmountData borrowAmounts;
-    //     UserAmountData borrowAmountsInEth;
-    //     UserAmountData holdAmounts;
-    //     UserAmountData holdAmountsInEth;
-    //     UserAmountData aaveSupplyAmounts;
-    //     UserAmountData aaveSupplyAmountsInEth;
-    //     UserAmountData aaveBorrowAmounts;
-    //     UserAmountData aaveBorrowAmountsInEth;
-    //     PriceInEth pricesInEth;
-    //     Decimals decimals;
-    //     PoolData liquidityPoolData;
-    //     PoolData aavePoolData;
-    //     uint256 totalSupplyInEth;
-    //     uint256 totalSupplyInUsd;
-    //     uint256 totalBorrowInEth;
-    //     uint256 totalBorrowInUsd;
-    //     uint256 totalHoldInEth;
-    //     uint256 totalHoldInUsd;
-    //     uint256 totalAaveSupplyInEth;
-    //     uint256 totalAaveSupplyInUsd;
-    //     uint256 totalAaveBorrowInEth;
-    //     uint256 totalAaveBorrowInUsd;
-    //     int256 netApy;
-    //     uint256 healthFactor;
-    //     uint256 aaveHealthFactor;
-    // }
+    struct NftData {
+        address wallet;
+        UserAmountData supplyAmounts;
+        UserAmountData borrowAmounts;
+        UserAmountData holdAmounts;
+        UserAmountData aaveSupplyAmounts;
+        UserAmountData aaveBorrowAmounts;
+        uint256 totalSupplyInUsd;
+        uint256 totalBorrowInUsd;
+        uint256 totalHoldInUsd;
+        uint256 totalAaveSupplyInUsd;
+        uint256 totalAaveBorrowInUsd;
+        int256 netApy;
+        uint256 healthFactor;
+        uint256 aaveHealthFactor;
+    }
 
-    // function getUCWalletData(address wallet_)
-    //     public
-    //     view
-    //     returns (UserUcWalletData memory userUcWalletData_)
-    // {
-    //     userUcWalletData_.wallet = wallet_;
+    function getNftData(uint256 tokenId_)
+        public
+        view
+        returns (NftData memory nftData_)
+    {
+        nftData_.wallet = NFT_MANAGER.tokenIdToCapsule(tokenId_);
 
-    //     // supply amounts
-    //     (, userUcWalletData_.supplyAmounts.weth) = LIQUIDITY_POOL
-    //         .getUserSupplyAmount(wallet_, WETH_ADDR);
-    //     (, userUcWalletData_.supplyAmounts.usdc) = LIQUIDITY_POOL
-    //         .getUserSupplyAmount(wallet_, USDC_ADDR);
-    //     (, userUcWalletData_.supplyAmounts.dai) = LIQUIDITY_POOL
-    //         .getUserSupplyAmount(wallet_, DAI_ADDR);
-    //     (, userUcWalletData_.supplyAmounts.wbtc) = LIQUIDITY_POOL
-    //         .getUserSupplyAmount(wallet_, WBTC_ADDR);
+        // supply amounts
+        (, nftData_.supplyAmounts.weth) = LIQUIDITY_POOL.getUserSupplyAmount(
+            nftData_.wallet,
+            WETH_ADDR
+        );
+        (, nftData_.supplyAmounts.usdc) = LIQUIDITY_POOL.getUserSupplyAmount(
+            nftData_.wallet,
+            USDC_ADDR
+        );
+        (, nftData_.supplyAmounts.dai) = LIQUIDITY_POOL.getUserSupplyAmount(
+            nftData_.wallet,
+            DAI_ADDR
+        );
+        (, nftData_.supplyAmounts.wbtc) = LIQUIDITY_POOL.getUserSupplyAmount(
+            nftData_.wallet,
+            WBTC_ADDR
+        );
 
-    //     // borrow amounts
-    //     (, userUcWalletData_.borrowAmounts.weth) = LIQUIDITY_POOL
-    //         .getUserBorrowAmount(wallet_, WETH_ADDR);
-    //     (, userUcWalletData_.borrowAmounts.usdc) = LIQUIDITY_POOL
-    //         .getUserBorrowAmount(wallet_, USDC_ADDR);
-    //     (, userUcWalletData_.borrowAmounts.dai) = LIQUIDITY_POOL
-    //         .getUserBorrowAmount(wallet_, DAI_ADDR);
-    //     (, userUcWalletData_.borrowAmounts.wbtc) = LIQUIDITY_POOL
-    //         .getUserBorrowAmount(wallet_, WBTC_ADDR);
+        // borrow amounts
+        (, nftData_.borrowAmounts.weth) = LIQUIDITY_POOL.getUserBorrowAmount(
+            nftData_.wallet,
+            WETH_ADDR
+        );
+        (, nftData_.borrowAmounts.usdc) = LIQUIDITY_POOL.getUserBorrowAmount(
+            nftData_.wallet,
+            USDC_ADDR
+        );
+        (, nftData_.borrowAmounts.dai) = LIQUIDITY_POOL.getUserBorrowAmount(
+            nftData_.wallet,
+            DAI_ADDR
+        );
+        (, nftData_.borrowAmounts.wbtc) = LIQUIDITY_POOL.getUserBorrowAmount(
+            nftData_.wallet,
+            WBTC_ADDR
+        );
 
-    //     // hold amounts
-    //     userUcWalletData_.holdAmounts.weth = IERC20(WETH_ADDR).balanceOf(
-    //         wallet_
-    //     );
-    //     userUcWalletData_.holdAmounts.usdc = IERC20(USDC_ADDR).balanceOf(
-    //         wallet_
-    //     );
-    //     userUcWalletData_.holdAmounts.dai = IERC20(DAI_ADDR).balanceOf(wallet_);
-    //     userUcWalletData_.holdAmounts.wbtc = IERC20(WBTC_ADDR).balanceOf(
-    //         wallet_
-    //     );
+        // hold amounts
+        nftData_.holdAmounts.weth = IERC20(WETH_ADDR).balanceOf(
+            nftData_.wallet
+        );
+        nftData_.holdAmounts.usdc = IERC20(USDC_ADDR).balanceOf(
+            nftData_.wallet
+        );
+        nftData_.holdAmounts.dai = IERC20(DAI_ADDR).balanceOf(nftData_.wallet);
+        nftData_.holdAmounts.wbtc = IERC20(WBTC_ADDR).balanceOf(
+            nftData_.wallet
+        );
 
-    //     // aave supply amounts
-    //     userUcWalletData_.holdAmounts.weth = IERC20(
-    //         AAVE_WETH_COLLATERAL_TOKEN_ADDR
-    //     ).balanceOf(wallet_);
-    //     userUcWalletData_.holdAmounts.usdc = IERC20(
-    //         AAVE_USDC_COLLATERAL_TOKEN_ADDR
-    //     ).balanceOf(wallet_);
-    //     userUcWalletData_.holdAmounts.dai = IERC20(
-    //         AAVE_DAI_COLLATERAL_TOKEN_ADDR
-    //     ).balanceOf(wallet_);
-    //     userUcWalletData_.holdAmounts.wbtc = IERC20(
-    //         AAVE_WBTC_COLLATERAL_TOKEN_ADDR
-    //     ).balanceOf(wallet_);
+        // aave supply amounts
+        nftData_.holdAmounts.weth = IERC20(AAVE_WETH_COLLATERAL_TOKEN_ADDR)
+            .balanceOf(nftData_.wallet);
+        nftData_.holdAmounts.usdc = IERC20(AAVE_USDC_COLLATERAL_TOKEN_ADDR)
+            .balanceOf(nftData_.wallet);
+        nftData_.holdAmounts.dai = IERC20(AAVE_DAI_COLLATERAL_TOKEN_ADDR)
+            .balanceOf(nftData_.wallet);
+        nftData_.holdAmounts.wbtc = IERC20(AAVE_WBTC_COLLATERAL_TOKEN_ADDR)
+            .balanceOf(nftData_.wallet);
 
-    //     // aave borrow amounts
-    //     userUcWalletData_.holdAmounts.weth = IERC20(
-    //         AAVE_WETH_VARIABLE_DEBT_TOKEN_ADDR
-    //     ).balanceOf(wallet_);
-    //     userUcWalletData_.holdAmounts.usdc = IERC20(
-    //         AAVE_USDC_VARIABLE_DEBT_TOKEN_ADDR
-    //     ).balanceOf(wallet_);
-    //     userUcWalletData_.holdAmounts.dai = IERC20(
-    //         AAVE_DAI_VARIABLE_DEBT_TOKEN_ADDR
-    //     ).balanceOf(wallet_);
-    //     userUcWalletData_.holdAmounts.wbtc = IERC20(
-    //         AAVE_WBTC_VARIABLE_DEBT_TOKEN_ADDR
-    //     ).balanceOf(wallet_);
+        // aave borrow amounts
+        nftData_.holdAmounts.weth = IERC20(AAVE_WETH_VARIABLE_DEBT_TOKEN_ADDR)
+            .balanceOf(nftData_.wallet);
+        nftData_.holdAmounts.usdc = IERC20(AAVE_USDC_VARIABLE_DEBT_TOKEN_ADDR)
+            .balanceOf(nftData_.wallet);
+        nftData_.holdAmounts.dai = IERC20(AAVE_DAI_VARIABLE_DEBT_TOKEN_ADDR)
+            .balanceOf(nftData_.wallet);
+        nftData_.holdAmounts.wbtc = IERC20(AAVE_WBTC_VARIABLE_DEBT_TOKEN_ADDR)
+            .balanceOf(nftData_.wallet);
 
-    //     // prices
-    //     userUcWalletData_.pricesInEth = getPrices();
+        // prices
+        PriceInEth memory pricesInEth_ = getPrices();
 
-    //     // decimals
-    //     userUcWalletData_.decimals.weth = IERC20(WETH_ADDR).decimals();
-    //     userUcWalletData_.decimals.usdc = IERC20(USDC_ADDR).decimals();
-    //     userUcWalletData_.decimals.dai = IERC20(DAI_ADDR).decimals();
-    //     userUcWalletData_.decimals.wbtc = IERC20(WBTC_ADDR).decimals();
+        // decimals
+        Decimals memory decimals_;
+        decimals_.weth = IERC20(WETH_ADDR).decimals();
+        decimals_.usdc = IERC20(USDC_ADDR).decimals();
+        decimals_.dai = IERC20(DAI_ADDR).decimals();
+        decimals_.wbtc = IERC20(WBTC_ADDR).decimals();
 
-    //     // liquidity pool data for rates
-    //     userUcWalletData_.liquidityPoolData = getLiquidityPoolData();
+        // liquidity pool data for rates
+        PoolData memory liquidityPoolData_ = getLiquidityPoolData();
 
-    //     // aave pool data for rates
-    //     userUcWalletData_.aavePoolData = getAavePoolData();
+        // aave pool data for rates
+        PoolData memory aavePoolData_ = getAavePoolData();
 
-    //     // supply amounts in eth
-    //     userUcWalletData_.supplyAmountsInEth.weth =
-    //         (userUcWalletData_.supplyAmounts.weth *
-    //             userUcWalletData_.pricesInEth.weth) /
-    //         (10**userUcWalletData_.decimals.weth);
-    //     userUcWalletData_.supplyAmountsInEth.usdc =
-    //         (userUcWalletData_.supplyAmounts.usdc *
-    //             userUcWalletData_.pricesInEth.usdc) /
-    //         (10**userUcWalletData_.decimals.usdc);
-    //     userUcWalletData_.supplyAmountsInEth.dai =
-    //         (userUcWalletData_.supplyAmounts.dai *
-    //             userUcWalletData_.pricesInEth.dai) /
-    //         (10**userUcWalletData_.decimals.dai);
-    //     userUcWalletData_.supplyAmountsInEth.wbtc =
-    //         (userUcWalletData_.supplyAmounts.wbtc *
-    //             userUcWalletData_.pricesInEth.wbtc) /
-    //         (10**userUcWalletData_.decimals.wbtc);
+        // supply amounts in eth
+        UserAmountData memory supplyAmountsInEth_;
+        supplyAmountsInEth_.weth =
+            (nftData_.supplyAmounts.weth * pricesInEth_.weth) /
+            (10**decimals_.weth);
+        supplyAmountsInEth_.usdc =
+            (nftData_.supplyAmounts.usdc * pricesInEth_.usdc) /
+            (10**decimals_.usdc);
+        supplyAmountsInEth_.dai =
+            (nftData_.supplyAmounts.dai * pricesInEth_.dai) /
+            (10**decimals_.dai);
+        supplyAmountsInEth_.wbtc =
+            (nftData_.supplyAmounts.wbtc * pricesInEth_.wbtc) /
+            (10**decimals_.wbtc);
 
-    //     // total supply in eth
-    //     // in 18 decimals
-    //     userUcWalletData_.totalSupplyInEth =
-    //         userUcWalletData_.supplyAmountsInEth.weth +
-    //         userUcWalletData_.supplyAmountsInEth.usdc +
-    //         userUcWalletData_.supplyAmountsInEth.dai +
-    //         userUcWalletData_.supplyAmountsInEth.wbtc;
+        // total supply in eth
+        // in 18 decimals
+        uint256 totalSupplyInEth_ = supplyAmountsInEth_.weth +
+            supplyAmountsInEth_.usdc +
+            supplyAmountsInEth_.dai +
+            supplyAmountsInEth_.wbtc;
 
-    //     // total supply in usd
-    //     // in 18 decimals
-    //     userUcWalletData_.totalSupplyInUsd =
-    //         (userUcWalletData_.totalSupplyInEth * 1e18) /
-    //         userUcWalletData_.pricesInEth.usdc;
+        // total supply in usd
+        // in 18 decimals
+        nftData_.totalSupplyInUsd = pricesInEth_.usdc == 0
+            ? 0
+            : (totalSupplyInEth_ * 1e18) / pricesInEth_.usdc;
 
-    //     // borrow amounts in eth
-    //     userUcWalletData_.borrowAmountsInEth.weth =
-    //         (userUcWalletData_.borrowAmounts.weth *
-    //             userUcWalletData_.pricesInEth.weth) /
-    //         (10**userUcWalletData_.decimals.weth);
-    //     userUcWalletData_.borrowAmountsInEth.usdc =
-    //         (userUcWalletData_.borrowAmounts.usdc *
-    //             userUcWalletData_.pricesInEth.usdc) /
-    //         (10**userUcWalletData_.decimals.usdc);
-    //     userUcWalletData_.borrowAmountsInEth.dai =
-    //         (userUcWalletData_.borrowAmounts.dai *
-    //             userUcWalletData_.pricesInEth.dai) /
-    //         (10**userUcWalletData_.decimals.dai);
-    //     userUcWalletData_.borrowAmountsInEth.wbtc =
-    //         (userUcWalletData_.borrowAmounts.wbtc *
-    //             userUcWalletData_.pricesInEth.wbtc) /
-    //         (10**userUcWalletData_.decimals.wbtc);
+        // borrow amounts in eth
+        UserAmountData memory borrowAmountsInEth_;
+        borrowAmountsInEth_.weth =
+            (nftData_.borrowAmounts.weth * pricesInEth_.weth) /
+            (10**decimals_.weth);
+        borrowAmountsInEth_.usdc =
+            (nftData_.borrowAmounts.usdc * pricesInEth_.usdc) /
+            (10**decimals_.usdc);
+        borrowAmountsInEth_.dai =
+            (nftData_.borrowAmounts.dai * pricesInEth_.dai) /
+            (10**decimals_.dai);
+        borrowAmountsInEth_.wbtc =
+            (nftData_.borrowAmounts.wbtc * pricesInEth_.wbtc) /
+            (10**decimals_.wbtc);
 
-    //     // total borrow in eth
-    //     // in 18 decimals
-    //     userUcWalletData_.totalBorrowInEth =
-    //         userUcWalletData_.borrowAmountsInEth.weth +
-    //         userUcWalletData_.borrowAmountsInEth.usdc +
-    //         userUcWalletData_.borrowAmountsInEth.dai +
-    //         userUcWalletData_.borrowAmountsInEth.wbtc;
+        // total borrow in eth
+        // in 18 decimals
+        uint256 totalBorrowInEth_ = borrowAmountsInEth_.weth +
+            borrowAmountsInEth_.usdc +
+            borrowAmountsInEth_.dai +
+            borrowAmountsInEth_.wbtc;
 
-    //     // total borrow in usd
-    //     // in 18 decimals
-    //     userUcWalletData_.totalBorrowInUsd =
-    //         (userUcWalletData_.totalBorrowInEth * 1e18) /
-    //         userUcWalletData_.pricesInEth.usdc;
+        // total borrow in usd
+        // in 18 decimals
+        nftData_.totalBorrowInUsd = pricesInEth_.usdc == 0
+            ? 0
+            : (totalBorrowInEth_ * 1e18) / pricesInEth_.usdc;
 
-    //     // hold amounts in eth
-    //     userUcWalletData_.holdAmountsInEth.weth =
-    //         (userUcWalletData_.holdAmounts.weth *
-    //             userUcWalletData_.pricesInEth.weth) /
-    //         (10**userUcWalletData_.decimals.weth);
-    //     userUcWalletData_.holdAmountsInEth.usdc =
-    //         (userUcWalletData_.holdAmounts.usdc *
-    //             userUcWalletData_.pricesInEth.usdc) /
-    //         (10**userUcWalletData_.decimals.usdc);
-    //     userUcWalletData_.holdAmountsInEth.dai =
-    //         (userUcWalletData_.holdAmounts.dai *
-    //             userUcWalletData_.pricesInEth.dai) /
-    //         (10**userUcWalletData_.decimals.dai);
-    //     userUcWalletData_.holdAmountsInEth.wbtc =
-    //         (userUcWalletData_.holdAmounts.wbtc *
-    //             userUcWalletData_.pricesInEth.wbtc) /
-    //         (10**userUcWalletData_.decimals.wbtc);
+        // hold amounts in eth
+        UserAmountData memory holdAmountsInEth_;
+        holdAmountsInEth_.weth =
+            (nftData_.holdAmounts.weth * pricesInEth_.weth) /
+            (10**decimals_.weth);
+        holdAmountsInEth_.usdc =
+            (nftData_.holdAmounts.usdc * pricesInEth_.usdc) /
+            (10**decimals_.usdc);
+        holdAmountsInEth_.dai =
+            (nftData_.holdAmounts.dai * pricesInEth_.dai) /
+            (10**decimals_.dai);
+        holdAmountsInEth_.wbtc =
+            (nftData_.holdAmounts.wbtc * pricesInEth_.wbtc) /
+            (10**decimals_.wbtc);
 
-    //     // total hold in eth
-    //     // in 18 decimals
-    //     userUcWalletData_.totalHoldInEth =
-    //         userUcWalletData_.holdAmountsInEth.weth +
-    //         userUcWalletData_.holdAmountsInEth.usdc +
-    //         userUcWalletData_.holdAmountsInEth.dai +
-    //         userUcWalletData_.holdAmountsInEth.wbtc;
+        // total hold in eth
+        // in 18 decimals
+        uint256 totalHoldInEth_ = holdAmountsInEth_.weth +
+            holdAmountsInEth_.usdc +
+            holdAmountsInEth_.dai +
+            holdAmountsInEth_.wbtc;
 
-    //     // total hold in usd
-    //     // in 18 decimals
-    //     userUcWalletData_.totalHoldInUsd =
-    //         (userUcWalletData_.totalHoldInEth * 1e18) /
-    //         userUcWalletData_.pricesInEth.usdc;
+        // total hold in usd
+        // in 18 decimals
+        nftData_.totalHoldInUsd = pricesInEth_.usdc == 0
+            ? 0
+            : (totalHoldInEth_ * 1e18) / pricesInEth_.usdc;
 
-    //     // aave supply amounts in eth
-    //     userUcWalletData_.aaveSupplyAmountsInEth.weth =
-    //         (userUcWalletData_.aaveSupplyAmounts.weth *
-    //             userUcWalletData_.pricesInEth.weth) /
-    //         (10**userUcWalletData_.decimals.weth);
-    //     userUcWalletData_.aaveSupplyAmountsInEth.usdc =
-    //         (userUcWalletData_.aaveSupplyAmounts.usdc *
-    //             userUcWalletData_.pricesInEth.usdc) /
-    //         (10**userUcWalletData_.decimals.usdc);
-    //     userUcWalletData_.aaveSupplyAmountsInEth.dai =
-    //         (userUcWalletData_.aaveSupplyAmounts.dai *
-    //             userUcWalletData_.pricesInEth.dai) /
-    //         (10**userUcWalletData_.decimals.dai);
-    //     userUcWalletData_.aaveSupplyAmountsInEth.wbtc =
-    //         (userUcWalletData_.aaveSupplyAmounts.wbtc *
-    //             userUcWalletData_.pricesInEth.wbtc) /
-    //         (10**userUcWalletData_.decimals.wbtc);
+        // aave supply amounts in eth
+        UserAmountData memory aaveSupplyAmountsInEth_;
+        aaveSupplyAmountsInEth_.weth =
+            (nftData_.aaveSupplyAmounts.weth * pricesInEth_.weth) /
+            (10**decimals_.weth);
+        aaveSupplyAmountsInEth_.usdc =
+            (nftData_.aaveSupplyAmounts.usdc * pricesInEth_.usdc) /
+            (10**decimals_.usdc);
+        aaveSupplyAmountsInEth_.dai =
+            (nftData_.aaveSupplyAmounts.dai * pricesInEth_.dai) /
+            (10**decimals_.dai);
+        aaveSupplyAmountsInEth_.wbtc =
+            (nftData_.aaveSupplyAmounts.wbtc * pricesInEth_.wbtc) /
+            (10**decimals_.wbtc);
 
-    //     // total aave supply in eth
-    //     // in 18 decimals
-    //     userUcWalletData_.totalAaveSupplyInEth =
-    //         userUcWalletData_.aaveSupplyAmountsInEth.weth +
-    //         userUcWalletData_.aaveSupplyAmountsInEth.usdc +
-    //         userUcWalletData_.aaveSupplyAmountsInEth.dai +
-    //         userUcWalletData_.aaveSupplyAmountsInEth.wbtc;
+        // total aave supply in eth
+        // in 18 decimals
+        uint256 totalAaveSupplyInEth_ = aaveSupplyAmountsInEth_.weth +
+            aaveSupplyAmountsInEth_.usdc +
+            aaveSupplyAmountsInEth_.dai +
+            aaveSupplyAmountsInEth_.wbtc;
 
-    //     // total aave supply in usd
-    //     // in 18 decimals
-    //     userUcWalletData_.totalAaveSupplyInUsd =
-    //         (userUcWalletData_.totalAaveSupplyInEth * 1e18) /
-    //         userUcWalletData_.pricesInEth.usdc;
+        // total aave supply in usd
+        // in 18 decimals
+        nftData_.totalAaveSupplyInUsd = pricesInEth_.usdc == 0
+            ? 0
+            : (totalAaveSupplyInEth_ * 1e18) / pricesInEth_.usdc;
 
-    //     // aave borrow amounts in eth
-    //     userUcWalletData_.aaveBorrowAmountsInEth.weth =
-    //         (userUcWalletData_.aaveBorrowAmounts.weth *
-    //             userUcWalletData_.pricesInEth.weth) /
-    //         (10**userUcWalletData_.decimals.weth);
-    //     userUcWalletData_.aaveBorrowAmountsInEth.usdc =
-    //         (userUcWalletData_.aaveBorrowAmounts.usdc *
-    //             userUcWalletData_.pricesInEth.usdc) /
-    //         (10**userUcWalletData_.decimals.usdc);
-    //     userUcWalletData_.aaveBorrowAmountsInEth.dai =
-    //         (userUcWalletData_.aaveBorrowAmounts.dai *
-    //             userUcWalletData_.pricesInEth.dai) /
-    //         (10**userUcWalletData_.decimals.dai);
-    //     userUcWalletData_.aaveBorrowAmountsInEth.wbtc =
-    //         (userUcWalletData_.aaveBorrowAmounts.wbtc *
-    //             userUcWalletData_.pricesInEth.wbtc) /
-    //         (10**userUcWalletData_.decimals.wbtc);
+        // aave borrow amounts in eth
+        UserAmountData memory aaveBorrowAmountsInEth_;
+        aaveBorrowAmountsInEth_.weth =
+            (nftData_.aaveBorrowAmounts.weth * pricesInEth_.weth) /
+            (10**decimals_.weth);
+        aaveBorrowAmountsInEth_.usdc =
+            (nftData_.aaveBorrowAmounts.usdc * pricesInEth_.usdc) /
+            (10**decimals_.usdc);
+        aaveBorrowAmountsInEth_.dai =
+            (nftData_.aaveBorrowAmounts.dai * pricesInEth_.dai) /
+            (10**decimals_.dai);
+        aaveBorrowAmountsInEth_.wbtc =
+            (nftData_.aaveBorrowAmounts.wbtc * pricesInEth_.wbtc) /
+            (10**decimals_.wbtc);
 
-    //     // total aave borrow in eth
-    //     // in 18 decimals
-    //     userUcWalletData_.totalAaveBorrowInEth =
-    //         userUcWalletData_.aaveBorrowAmountsInEth.weth +
-    //         userUcWalletData_.aaveBorrowAmountsInEth.usdc +
-    //         userUcWalletData_.aaveBorrowAmountsInEth.dai +
-    //         userUcWalletData_.aaveBorrowAmountsInEth.wbtc;
+        // total aave borrow in eth
+        // in 18 decimals
+        uint256 totalAaveBorrowInEth_ = aaveBorrowAmountsInEth_.weth +
+            aaveBorrowAmountsInEth_.usdc +
+            aaveBorrowAmountsInEth_.dai +
+            aaveBorrowAmountsInEth_.wbtc;
 
-    //     // total aave borrow in usd
-    //     // in 18 decimals
-    //     userUcWalletData_.totalAaveBorrowInUsd =
-    //         (userUcWalletData_.totalAaveBorrowInEth * 1e18) /
-    //         userUcWalletData_.pricesInEth.usdc;
+        // total aave borrow in usd
+        // in 18 decimals
+        nftData_.totalAaveBorrowInUsd = pricesInEth_.usdc == 0
+            ? 0
+            : (totalAaveBorrowInEth_ * 1e18) / pricesInEth_.usdc;
 
-    //     // net apy calc
-    //     // numerator
-    //     int256 numerator_ = int256(
-    //         userUcWalletData_.supplyAmountsInEth.weth *
-    //             userUcWalletData_.liquidityPoolData.supplyRate.weth
-    //     );
-    //     numerator_ =
-    //         numerator_ +
-    //         int256(
-    //             userUcWalletData_.supplyAmountsInEth.usdc *
-    //                 userUcWalletData_.liquidityPoolData.supplyRate.usdc
-    //         );
-    //     numerator_ =
-    //         numerator_ +
-    //         int256(
-    //             userUcWalletData_.supplyAmountsInEth.dai *
-    //                 userUcWalletData_.liquidityPoolData.supplyRate.dai
-    //         );
-    //     numerator_ =
-    //         numerator_ +
-    //         int256(
-    //             userUcWalletData_.supplyAmountsInEth.wbtc *
-    //                 userUcWalletData_.liquidityPoolData.supplyRate.wbtc
-    //         );
+        // net apy calc
+        // numerator
+        int256 numerator_ = int256(
+            supplyAmountsInEth_.weth * liquidityPoolData_.supplyRate.weth
+        );
+        numerator_ =
+            numerator_ +
+            int256(
+                supplyAmountsInEth_.usdc * liquidityPoolData_.supplyRate.usdc
+            );
+        numerator_ =
+            numerator_ +
+            int256(supplyAmountsInEth_.dai * liquidityPoolData_.supplyRate.dai);
+        numerator_ =
+            numerator_ +
+            int256(
+                supplyAmountsInEth_.wbtc * liquidityPoolData_.supplyRate.wbtc
+            );
 
-    //     numerator_ = int256(
-    //         userUcWalletData_.aaveSupplyAmountsInEth.weth *
-    //             userUcWalletData_.aavePoolData.supplyRate.weth
-    //     );
-    //     numerator_ =
-    //         numerator_ +
-    //         int256(
-    //             userUcWalletData_.aaveSupplyAmountsInEth.usdc *
-    //                 userUcWalletData_.aavePoolData.supplyRate.usdc
-    //         );
-    //     numerator_ =
-    //         numerator_ +
-    //         int256(
-    //             userUcWalletData_.aaveSupplyAmountsInEth.dai *
-    //                 userUcWalletData_.aavePoolData.supplyRate.dai
-    //         );
-    //     numerator_ =
-    //         numerator_ +
-    //         int256(
-    //             userUcWalletData_.aaveSupplyAmountsInEth.wbtc *
-    //                 userUcWalletData_.aavePoolData.supplyRate.wbtc
-    //         );
+        numerator_ = int256(
+            aaveSupplyAmountsInEth_.weth * aavePoolData_.supplyRate.weth
+        );
+        numerator_ =
+            numerator_ +
+            int256(
+                aaveSupplyAmountsInEth_.usdc * aavePoolData_.supplyRate.usdc
+            );
+        numerator_ =
+            numerator_ +
+            int256(aaveSupplyAmountsInEth_.dai * aavePoolData_.supplyRate.dai);
+        numerator_ =
+            numerator_ +
+            int256(
+                aaveSupplyAmountsInEth_.wbtc * aavePoolData_.supplyRate.wbtc
+            );
 
-    //     numerator_ =
-    //         numerator_ -
-    //         int256(
-    //             userUcWalletData_.borrowAmountsInEth.weth *
-    //                 userUcWalletData_.liquidityPoolData.borrowRate.weth
-    //         );
-    //     numerator_ =
-    //         numerator_ -
-    //         int256(
-    //             userUcWalletData_.borrowAmountsInEth.usdc *
-    //                 userUcWalletData_.liquidityPoolData.borrowRate.usdc
-    //         );
-    //     numerator_ =
-    //         numerator_ -
-    //         int256(
-    //             userUcWalletData_.borrowAmountsInEth.dai *
-    //                 userUcWalletData_.liquidityPoolData.borrowRate.dai
-    //         );
-    //     numerator_ =
-    //         numerator_ -
-    //         int256(
-    //             userUcWalletData_.borrowAmountsInEth.wbtc *
-    //                 userUcWalletData_.liquidityPoolData.borrowRate.wbtc
-    //         );
+        numerator_ =
+            numerator_ -
+            int256(
+                borrowAmountsInEth_.weth * liquidityPoolData_.borrowRate.weth
+            );
+        numerator_ =
+            numerator_ -
+            int256(
+                borrowAmountsInEth_.usdc * liquidityPoolData_.borrowRate.usdc
+            );
+        numerator_ =
+            numerator_ -
+            int256(borrowAmountsInEth_.dai * liquidityPoolData_.borrowRate.dai);
+        numerator_ =
+            numerator_ -
+            int256(
+                borrowAmountsInEth_.wbtc * liquidityPoolData_.borrowRate.wbtc
+            );
 
-    //     numerator_ =
-    //         numerator_ -
-    //         int256(
-    //             userUcWalletData_.aaveBorrowAmountsInEth.weth *
-    //                 userUcWalletData_.aavePoolData.borrowRate.weth
-    //         );
-    //     numerator_ =
-    //         numerator_ -
-    //         int256(
-    //             userUcWalletData_.aaveBorrowAmountsInEth.usdc *
-    //                 userUcWalletData_.aavePoolData.borrowRate.usdc
-    //         );
-    //     numerator_ =
-    //         numerator_ -
-    //         int256(
-    //             userUcWalletData_.aaveBorrowAmountsInEth.dai *
-    //                 userUcWalletData_.aavePoolData.borrowRate.dai
-    //         );
-    //     numerator_ =
-    //         numerator_ -
-    //         int256(
-    //             userUcWalletData_.aaveBorrowAmountsInEth.wbtc *
-    //                 userUcWalletData_.aavePoolData.borrowRate.wbtc
-    //         );
+        numerator_ =
+            numerator_ -
+            int256(
+                aaveBorrowAmountsInEth_.weth * aavePoolData_.borrowRate.weth
+            );
+        numerator_ =
+            numerator_ -
+            int256(
+                aaveBorrowAmountsInEth_.usdc * aavePoolData_.borrowRate.usdc
+            );
+        numerator_ =
+            numerator_ -
+            int256(aaveBorrowAmountsInEth_.dai * aavePoolData_.borrowRate.dai);
+        numerator_ =
+            numerator_ -
+            int256(
+                aaveBorrowAmountsInEth_.wbtc * aavePoolData_.borrowRate.wbtc
+            );
 
-    //     // denominator
-    //     uint256 denominator_ = userUcWalletData_.totalSupplyInEth +
-    //         userUcWalletData_.totalHoldInEth +
-    //         userUcWalletData_.totalAaveSupplyInEth -
-    //         userUcWalletData_.totalBorrowInEth -
-    //         userUcWalletData_.totalAaveBorrowInEth;
+        // denominator
+        uint256 denominator_ = totalSupplyInEth_ +
+            totalHoldInEth_ +
+            totalAaveSupplyInEth_ -
+            totalBorrowInEth_ -
+            totalAaveBorrowInEth_;
 
-    //     userUcWalletData_.netApy = numerator_ / int256(denominator_);
+        nftData_.netApy = denominator_ == 0
+            ? int256(0)
+            : numerator_ / int256(denominator_);
 
-    //     userUcWalletData_.healthFactor = IWallet(wallet_).getHf();
-    //     (, , , , , userUcWalletData_.aaveHealthFactor) = AAVE_LENDING_POOL
-    //         .getUserAccountData(wallet_);
-    // }
+        nftData_.healthFactor = IWallet(nftData_.wallet).getHf();
+        (, , , , , nftData_.aaveHealthFactor) = AAVE_LENDING_POOL
+            .getUserAccountData(nftData_.wallet);
+    }
 
     // function getUsersNftData(address user_)
     //     external

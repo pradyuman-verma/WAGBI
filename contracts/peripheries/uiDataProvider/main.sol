@@ -349,7 +349,7 @@ contract UIDataProvider {
         userOcData_.healthFactor = OC_MARKET.getHf(user_);
     }
 
-    function getUserNftIds(address user_)
+    function getUserNfts(address user_)
         public
         view
         returns (uint256[] memory tokenIds_)
@@ -361,6 +361,7 @@ contract UIDataProvider {
     }
 
     struct NftData {
+        uint256 tokenId;
         address wallet;
         UserAmountData supplyAmounts;
         UserAmountData borrowAmounts;
@@ -382,6 +383,7 @@ contract UIDataProvider {
         view
         returns (NftData memory nftData_)
     {
+        nftData_.tokenId = tokenId_;
         nftData_.wallet = NFT_MANAGER.getTokenIdToCapsule(tokenId_);
 
         // supply amounts
@@ -705,43 +707,44 @@ contract UIDataProvider {
             .getUserAccountData(nftData_.wallet);
     }
 
-    // function getUsersNftData(address user_)
-    //     external
-    //     view
-    //     returns (
-    //         uint256 totalSupplyInUsd_,
-    //         uint256 totalBorrowInUsd_,
-    //         int256 totalApy_,
-    //         UserUcWalletData[] memory positions_
-    //     )
-    // {
-    //     positions_ = new UserUcWalletData[](10);
-    //     int256 numerator_;
-    //     uint256 denominator_;
-    //     for (uint256 i; i < wallets_.length; ) {
-    //         positions_[i] = getUCWalletData(wallets_[i]);
-    //         uint256 positionTotalSupplyInUsd_ = positions_[i].totalSupplyInUsd +
-    //             positions_[i].totalHoldInUsd +
-    //             positions_[i].totalAaveSupplyInUsd;
+    function getUserNftsData(address user_)
+        external
+        view
+        returns (
+            uint256 totalSupplyInUsd_,
+            uint256 totalBorrowInUsd_,
+            int256 totalApy_,
+            NftData[] memory nftDatas_
+        )
+    {
+        uint256[] memory tokenIds_ = getUserNfts(user_);
+        nftDatas_ = new NftData[](tokenIds_.length);
+        int256 numerator_;
+        uint256 denominator_;
+        for (uint256 i; i < tokenIds_.length; ) {
+            nftDatas_[i] = getNftData(tokenIds_[i]);
+            uint256 positionTotalSupplyInUsd_ = nftDatas_[i].totalSupplyInUsd +
+                nftDatas_[i].totalHoldInUsd +
+                nftDatas_[i].totalAaveSupplyInUsd;
 
-    //         uint256 positionTotalBorrowInUsd_ = positions_[i].totalBorrowInUsd +
-    //             positions_[i].totalAaveBorrowInUsd;
+            uint256 positionTotalBorrowInUsd_ = nftDatas_[i].totalBorrowInUsd +
+                nftDatas_[i].totalAaveBorrowInUsd;
 
-    //         totalSupplyInUsd_ += positionTotalSupplyInUsd_;
-    //         totalBorrowInUsd_ += positionTotalBorrowInUsd_;
+            totalSupplyInUsd_ += positionTotalSupplyInUsd_;
+            totalBorrowInUsd_ += positionTotalBorrowInUsd_;
 
-    //         numerator_ +=
-    //             (int256(positionTotalSupplyInUsd_) -
-    //                 int256(positionTotalBorrowInUsd_)) *
-    //             positions_[i].netApy;
+            numerator_ +=
+                (int256(positionTotalSupplyInUsd_) -
+                    int256(positionTotalBorrowInUsd_)) *
+                nftDatas_[i].netApy;
 
-    //         denominator_ = denominator_ + totalSupplyInUsd_ - totalBorrowInUsd_;
-
-    //         wallet_ = UC_WALLET_FACTORY.authToWallet(user_, i);
-    //         unchecked {
-    //             ++i;
-    //         }
-    //     }
-    //     totalApy_ = numerator_ / int256(denominator_);
-    // }
+            denominator_ = denominator_ + totalSupplyInUsd_ - totalBorrowInUsd_;
+            unchecked {
+                ++i;
+            }
+        }
+        totalApy_ = denominator_ == 0
+            ? int256(0)
+            : numerator_ / int256(denominator_);
+    }
 }

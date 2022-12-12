@@ -29,8 +29,7 @@ async function main() {
     oracle: Contract,
     oc: Contract,
     ucFactory: Contract,
-    nftManager: Contract,
-    ucWallet: Contract;
+    nftManager: Contract;
 
   let liquidityPoolImplementation: Contract,
     oracleImplementation: Contract,
@@ -75,11 +74,6 @@ async function main() {
   nftManager = await NftManager.deploy(fakeContract, proxyAdmin.address, "0x");
   await nftManager.deployed();
   console.log("Nft Manager deployed at:", nftManager.address);
-
-  const UCWallet = await ethers.getContractFactory("UCWallet");
-  ucWallet = await UCWallet.deploy(fakeContract, proxyAdmin.address, "0x");
-  await ucWallet.deployed();
-  console.log("UC wallet deployed at:", ucWallet.address);
 
   // faucet
   const Faucet = await ethers.getContractFactory("Faucet");
@@ -170,22 +164,6 @@ async function main() {
   await ocProxy.initialize();
   console.log("OC initialized!");
 
-  const UCFactoryImplementation = await ethers.getContractFactory(
-    "UCFactoryImplementation"
-  );
-  ucFactoryImplementation = await UCFactoryImplementation.deploy(
-    liquidityPool.address,
-    ucWallet.address
-  );
-  await ucFactoryImplementation.deployed();
-  console.log(
-    "UC factory implementation deployed at:",
-    ucFactoryImplementation.address
-  );
-
-  await proxyAdmin.upgrade(ucFactory.address, ucFactoryImplementation.address);
-  console.log("UC factory implementation upgraded!");
-
   const AaveInteractor = await ethers.getContractFactory("AaveInteractor");
   aaveInteractor = await AaveInteractor.deploy(
     aaveV2LendingPool,
@@ -217,8 +195,21 @@ async function main() {
     ucWalletImplementation.address
   );
 
-  await proxyAdmin.upgrade(ucWallet.address, ucWalletImplementation.address);
-  console.log("UC wallet implementation upgraded!");
+  const UCFactoryImplementation = await ethers.getContractFactory(
+    "UCFactoryImplementation"
+  );
+  ucFactoryImplementation = await UCFactoryImplementation.deploy(
+    liquidityPool.address,
+    ucWalletImplementation.address
+  );
+  await ucFactoryImplementation.deployed();
+  console.log(
+    "UC factory implementation deployed at:",
+    ucFactoryImplementation.address
+  );
+
+  await proxyAdmin.upgrade(ucFactory.address, ucFactoryImplementation.address);
+  console.log("UC factory implementation upgraded!");
 
   const NftManagerImplementation = await ethers.getContractFactory(
     "NftManagerImplementation"

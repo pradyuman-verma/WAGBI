@@ -30,8 +30,7 @@ describe("General", function () {
     oracle: Contract,
     oc: Contract,
     ucFactory: Contract,
-    nftManager: Contract,
-    ucWallet: Contract;
+    nftManager: Contract;
 
   let liquidityPoolImplementation: Contract,
     oracleImplementation: Contract,
@@ -84,11 +83,6 @@ describe("General", function () {
     await nftManager.deployed();
     console.log("Nft Manager deployed at:", nftManager.address);
 
-    const UCWallet = await ethers.getContractFactory("UCWallet");
-    ucWallet = await UCWallet.deploy(fakeContract, proxyAdmin.address, "0x");
-    await ucWallet.deployed();
-    console.log("UC wallet deployed at:", ucWallet.address);
-
     const Faucet = await ethers.getContractFactory("Faucet");
     faucet = await Faucet.deploy(aaveV2FaucetAddr, wethAddr);
     await faucet.deployed();
@@ -102,7 +96,6 @@ describe("General", function () {
     expect(!!oc.address).to.equal(true);
     expect(!!ucFactory.address).to.equal(true);
     expect(!!nftManager.address).to.equal(true);
-    expect(!!ucWallet.address).to.equal(true);
     expect(!!faucet.address).to.equal(true);
   });
 
@@ -196,27 +189,6 @@ describe("General", function () {
     console.log("OC initialized!");
   });
 
-  it("should setup uc factory", async () => {
-    const UCFactoryImplementation = await ethers.getContractFactory(
-      "UCFactoryImplementation"
-    );
-    ucFactoryImplementation = await UCFactoryImplementation.deploy(
-      liquidityPool.address,
-      ucWallet.address
-    );
-    await ucFactoryImplementation.deployed();
-    console.log(
-      "UC factory implementation deployed at:",
-      ucFactoryImplementation.address
-    );
-
-    await proxyAdmin.upgrade(
-      ucFactory.address,
-      ucFactoryImplementation.address
-    );
-    console.log("UC factory implementation upgraded!");
-  });
-
   it("should setup uc wallet", async () => {
     const AaveInteractor = await ethers.getContractFactory("AaveInteractor");
     aaveInteractor = await AaveInteractor.deploy(
@@ -248,9 +220,27 @@ describe("General", function () {
       "UC wallet implementation deployed at:",
       ucWalletImplementation.address
     );
+  });
 
-    await proxyAdmin.upgrade(ucWallet.address, ucWalletImplementation.address);
-    console.log("UC wallet implementation upgraded!");
+  it("should setup uc factory", async () => {
+    const UCFactoryImplementation = await ethers.getContractFactory(
+      "UCFactoryImplementation"
+    );
+    ucFactoryImplementation = await UCFactoryImplementation.deploy(
+      liquidityPool.address,
+      ucWalletImplementation.address
+    );
+    await ucFactoryImplementation.deployed();
+    console.log(
+      "UC factory implementation deployed at:",
+      ucFactoryImplementation.address
+    );
+
+    await proxyAdmin.upgrade(
+      ucFactory.address,
+      ucFactoryImplementation.address
+    );
+    console.log("UC factory implementation upgraded!");
   });
 
   it("should setup nft manager", async () => {
@@ -355,10 +345,7 @@ describe("General", function () {
     data = await uiDataProvider.getUserOCData(deployer.address);
     console.log("OC data:", data);
 
-    data = await uiDataProvider.getUserNftIds(deployer.address);
-    console.log("User Nfts:", data);
-
-    // data = await uiDataProvider.getNftData(1);
-    // console.log("Nft data:", data);
+    data = await uiDataProvider.getUserNftsData(deployer.address);
+    console.log("Nft data:", data);
   });
 });

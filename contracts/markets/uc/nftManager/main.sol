@@ -13,7 +13,7 @@ contract NftManagerImplementation is ERC721 {
 
     uint256 public tokenId;
 
-    mapping(uint256 => address) public tokenIdToCapsule;
+    mapping(uint256 => address) internal tokenIdToCapsule;
 
     constructor(address factory_, address pool_)
         ERC721("Orbit Capsules NFT", "ORBIT-CAPSULES")

@@ -73,8 +73,8 @@ contract OCImplementation is Helpers {
         // update user amounts data
         uint256 userAmountsData_ = userAmountsData[msg.sender][token_];
         uint256 userFinalSuppliedAmount_ = unpack(userAmountsData_, 0, 58) +
-            oldRawAmount_ -
-            newRawAmount_;
+            newRawAmount_ -
+            oldRawAmount_;
         userAmountsData[msg.sender][token_] = pack(
             userAmountsData_,
             userFinalSuppliedAmount_,
@@ -114,8 +114,8 @@ contract OCImplementation is Helpers {
         userAmountsData[msg.sender][token_] = pack(
             userAmountsData_,
             unpack(userAmountsData_, 59, 116) + newRawAmount_ - oldRawAmount_,
-            0,
-            58
+            59,
+            116
         );
 
         // update user tokens data
@@ -149,8 +149,8 @@ contract OCImplementation is Helpers {
         userAmountsData[for_][token_] = pack(
             userAmountsData_,
             userFinalBorrowedAmount_,
-            0,
-            58
+            59,
+            116
         );
 
         // update user tokens data

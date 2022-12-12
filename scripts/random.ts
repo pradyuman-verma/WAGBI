@@ -33,12 +33,12 @@ async function main() {
   const ucWalletAddr = "0x869310Bdf1C86eB34c605d076e5C2d35Cb794086";
   const faucetAddr = "0x16895aEF0445F72872524Cc0D10C50FA5C19a50a";
 
-  const myWallet = "0x1Ef1C9f892fe7F4EeA897948F2A2A900A6836Cea";
+  // const myWallet = "0x1Ef1C9f892fe7F4EeA897948F2A2A900A6836Cea";
 
-  const Wallet = await ethers.getContractAt("UCWalletImplementation", myWallet);
-  let data = await Wallet.supplyToLiquidityPool(usdcAddr, usdcAmount, true);
-  await data.wait();
-  console.log(data);
+  // const Wallet = await ethers.getContractAt("UCWalletImplementation", myWallet);
+  // let data = await Wallet.supplyToLiquidityPool(usdcAddr, usdcAmount, true);
+  // await data.wait();
+  // console.log(data);
 
   // const NftManager = await ethers.getContractAt(
   //   "NftManagerImplementation",
@@ -57,19 +57,17 @@ async function main() {
 
   // const Faucet = await ethers.getContractAt("Faucet", faucetAddr);
 
-    // const Wallet = await ethers.getContractFactory("UCWalletImplementation");
-    // let wallet = await Wallet.deploy(
-    //   liquidityPoolAddr,
-    //   oracleAddr,
-    //   aaveV2DataProvider,
-    //   aaveInteractorAddr,
-    //   wethAddr,
-    //   usdcAddr,
-    //   daiAddr,
-    //   wbtcAddr
-    // );
-    // await wallet.deployed();
-    // console.log("Wallet deployed at:", wallet.address);
+  const OC = await ethers.getContractFactory("OCImplementation");
+  let oc = await OC.deploy(
+    liquidityPoolAddr,
+    oracleAddr,
+    wethAddr,
+    usdcAddr,
+    daiAddr,
+    wbtcAddr
+  );
+  await oc.deployed();
+  console.log("OC deployed at:", oc.address);
 
   // const NftManager = await ethers.getContractFactory(
   //   "NftManagerImplementation"
@@ -78,12 +76,12 @@ async function main() {
   // await nftManager.deployed();
   // console.log("Nft Manager Implementation deployed at:", nftManager.address);
 
-  // const ProxyAdmin = await ethers.getContractAt(
-  //   "OrbitProxyAdmin",
-  //   proxyAdminAddr
-  // );
-  // await ProxyAdmin.upgrade(ucWalletAddr, wallet.address);
-  // console.log("Wallet upgraded");
+  const ProxyAdmin = await ethers.getContractAt(
+    "OrbitProxyAdmin",
+    proxyAdminAddr
+  );
+  await ProxyAdmin.upgrade(ocAddr, oc.address);
+  console.log("OC upgraded");
 
   // const UIDataProvider = await ethers.getContractFactory("UIDataProvider");
   // let uiDataProvider = await UIDataProvider.deploy(

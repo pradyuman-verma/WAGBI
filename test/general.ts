@@ -358,7 +358,7 @@ describe("General", function () {
     data = await uiDataProvider.getUserNftIds(deployer.address);
     console.log("User Nfts:", data);
 
-    data = await uiDataProvider.getNftData(1);
-    console.log("Nft data:", data);
+    // data = await uiDataProvider.getNftData(1);
+    // console.log("Nft data:", data);
   });
 });

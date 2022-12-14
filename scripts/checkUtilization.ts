@@ -16,8 +16,7 @@ async function main() {
   );
 
   let data = await LiquidityPoolDataProvider.getTokenUtilization(usdcAddr);
-  console.log(data.toString());
-
+  console.log((data / 1e6).toString() + '%');
 }
 
 main();

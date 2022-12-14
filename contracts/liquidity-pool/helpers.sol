@@ -238,7 +238,7 @@ contract Helpers is Events {
         uint256 secondsInYear = 31536000;
         uint256 utilization_ = unpack(_poolData[token_], 0, 26);
         uint256 borrowRatePerSecond_ = calRateFromUtilization(utilization_);
-        uint256 supplyRatePerSecond_ = (borrowRate_ *
+        uint256 supplyRatePerSecond_ = (borrowRatePerSecond_ *
             utilization_ *
             (10000 - FEE)) / 1e12;
         supplyRate_ = supplyRatePerSecond_ * secondsInYear;

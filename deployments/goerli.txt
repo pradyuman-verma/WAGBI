@@ -7,7 +7,7 @@ UC Factory Proxy: 0xEBb31e72CF95DC59525Db0301D14Ce20fF94D5c4
 Nft Manager Proxy: 0x908c0b69d8caeAc73f48f256E2954c2ca8F9198a
 
 Oracle Implementation: 0x7d4e6183D7aaa85B8e8Ca8F52b627ca7ab6DAAe7
-Liquidity Pool Implementation: 0x8101E8fa73396e25d5505236dC0E6Ec2C878f421
+Liquidity Pool Implementation: 0xb2c9f0E0141181472f3fd7febDA1634035e27766
 OC Implementation: 0x63109d3e7bA757fa45A5Fbb629A848d0C81e9443
 UC factory Implementation: 0x75514469757f8E0bF05a7B8471C8D59720Dccc6D
 UC wallet Implementation: 0xef2200B1fceFBE4a5d46b41294A9c34227879d8a

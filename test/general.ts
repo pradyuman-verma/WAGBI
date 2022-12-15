@@ -29,6 +29,7 @@ describe("General", function () {
     liquidityPool: Contract,
     oracle: Contract,
     oc: Contract,
+    ucWallet: Contract,
     ucFactory: Contract,
     nftManager: Contract;
 
@@ -69,6 +70,11 @@ describe("General", function () {
     await oc.deployed();
     console.log("OC deployed at:", oc.address);
 
+    const UCWallet = await ethers.getContractFactory("UCWallet");
+    ucWallet = await UCWallet.deploy(fakeContract, proxyAdmin.address);
+    await ucWallet.deployed();
+    console.log("UC wallet deployed at:", ucWallet.address);
+
     const UCFactory = await ethers.getContractFactory("UCFactory");
     ucFactory = await UCFactory.deploy(fakeContract, proxyAdmin.address, "0x");
     await ucFactory.deployed();
@@ -94,6 +100,7 @@ describe("General", function () {
     expect(!!liquidityPool.address).to.equal(true);
     expect(!!oracle.address).to.equal(true);
     expect(!!oc.address).to.equal(true);
+    expect(!!ucWallet.address).to.equal(true);
     expect(!!ucFactory.address).to.equal(true);
     expect(!!nftManager.address).to.equal(true);
     expect(!!faucet.address).to.equal(true);
@@ -220,6 +227,12 @@ describe("General", function () {
       "UC wallet implementation deployed at:",
       ucWalletImplementation.address
     );
+
+    await proxyAdmin.upgrade(
+      ucWallet.address,
+      ucWalletImplementation.address
+    );
+    console.log("UC wallet implementation upgraded!");
   });
 
   it("should setup uc factory", async () => {
@@ -228,7 +241,7 @@ describe("General", function () {
     );
     ucFactoryImplementation = await UCFactoryImplementation.deploy(
       liquidityPool.address,
-      ucWalletImplementation.address
+      ucWallet.address
     );
     await ucFactoryImplementation.deployed();
     console.log(

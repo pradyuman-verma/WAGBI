@@ -79,8 +79,8 @@ contract Variables {
     address internal immutable AAVE_WBTC_COLLATERAL_TOKEN_ADDR;
     address internal immutable AAVE_WBTC_VARIABLE_DEBT_TOKEN_ADDR;
 
-    uint16 REFERRAL_CODE = 0;
-    uint256 MODE = 2;
+    uint16 internal constant REFERRAL_CODE = 0;
+    uint256 internal constant MODE = 2;
 
     // STORAGE VARIABLES
     // User position mapping stored in bits

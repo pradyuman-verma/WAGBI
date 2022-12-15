@@ -28,6 +28,7 @@ async function main() {
     liquidityPool: Contract,
     oracle: Contract,
     oc: Contract,
+    ucWallet: Contract,
     ucFactory: Contract,
     nftManager: Contract;
 
@@ -64,6 +65,11 @@ async function main() {
   oc = await OC.deploy(fakeContract, proxyAdmin.address, "0x");
   await oc.deployed();
   console.log("OC deployed at:", oc.address);
+
+  const UCWallet = await ethers.getContractFactory("UCWallet");
+  ucWallet = await UCWallet.deploy(fakeContract, proxyAdmin.address);
+  await ucWallet.deployed();
+  console.log("UC wallet deployed at:", ucWallet.address);
 
   const UCFactory = await ethers.getContractFactory("UCFactory");
   ucFactory = await UCFactory.deploy(fakeContract, proxyAdmin.address, "0x");
@@ -195,12 +201,18 @@ async function main() {
     ucWalletImplementation.address
   );
 
+  await proxyAdmin.upgrade(
+    ucWallet.address,
+    ucWalletImplementation.address
+  );
+  console.log("UC wallet implementation upgraded!");
+
   const UCFactoryImplementation = await ethers.getContractFactory(
     "UCFactoryImplementation"
   );
   ucFactoryImplementation = await UCFactoryImplementation.deploy(
     liquidityPool.address,
-    ucWalletImplementation.address
+    ucWallet.address
   );
   await ucFactoryImplementation.deployed();
   console.log(

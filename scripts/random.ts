@@ -23,14 +23,15 @@ async function main() {
   const daiAmount = ethers.utils.parseUnits("1000000", "18");
   const wbtcAmount = ethers.utils.parseUnits("100", "8");
 
-  const proxyAdminAddr = "0x8D21F853c369222AF72F550caec5D3D84d5297A8";
-  const oracleAddr = "0x0b45FF6ED53B06989A79820521e61d76b9257d4c";
-  const liquidityPoolAddr = "0xa7352a773a946f498d9d6b848859E7e9215Fac83";
-  const ocAddr = "0x1E2aEA81Fa87265c33330ACC5079D726972c8Fd5";
-  const ucFactoryAddr = "0xEBb31e72CF95DC59525Db0301D14Ce20fF94D5c4";
-  const nftManagerAddr = "0x908c0b69d8caeAc73f48f256E2954c2ca8F9198a";
-  const aaveInteractorAddr = "0x74b1A0240e9bb8758F0D28dbe333200799a78B06";
-  const faucetAddr = "0xb74fFDAd0b9dcc6042B8B5c5D4639998EF99D1eB";
+  const proxyAdminAddr = "0x4AfAE2d0eF84F45f4433ef8e8c2862D2eC25379F";
+  const oracleAddr = "0xfAC94B0305f465bc90eBBC3578eD195767D9fF68";
+  const liquidityPoolAddr = "0xDd1FA8f06a97721478Db9f1aC63Da7Cd9abBBF71";
+  const ocAddr = "0xA7aF2FBABf8406DD5C53F1b258eeeC7C5435541D";
+  const ucWalletAddr = "0x6457ed779168357484F660Ba2835a3b3e7d29462";
+  const ucFactoryAddr = "0x216C81a5ACdFCBef845321469ADe701bC3628b9a";
+  const nftManagerAddr = "0x397897D80aA543C8dA83ACD6098485f9FB2d8eB9";
+  const aaveInteractorAddr = "0x9f5E978d808870ff353C95B974121A1E08D66759";
+  const faucetAddr = "0x4Ee1393353ec1b95Bb6d254B00EA3D4294B9b77C";
 
   // const myWallet = "0x1Ef1C9f892fe7F4EeA897948F2A2A900A6836Cea";
 

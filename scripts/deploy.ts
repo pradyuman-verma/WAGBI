@@ -201,10 +201,7 @@ async function main() {
     ucWalletImplementation.address
   );
 
-  await proxyAdmin.upgrade(
-    ucWallet.address,
-    ucWalletImplementation.address
-  );
+  await proxyAdmin.upgrade(ucWallet.address, ucWalletImplementation.address);
   console.log("UC wallet implementation upgraded!");
 
   const UCFactoryImplementation = await ethers.getContractFactory(

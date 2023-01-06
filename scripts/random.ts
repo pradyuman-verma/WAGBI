@@ -57,17 +57,17 @@ async function main() {
 
   // const Faucet = await ethers.getContractAt("Faucet", faucetAddr);
 
-  const OC = await ethers.getContractFactory("OCImplementation");
-  let oc = await OC.deploy(
-    liquidityPoolAddr,
-    oracleAddr,
-    wethAddr,
-    usdcAddr,
-    daiAddr,
-    wbtcAddr
-  );
-  await oc.deployed();
-  console.log("OC deployed at:", oc.address);
+  // const OC = await ethers.getContractFactory("OCImplementation");
+  // let oc = await OC.deploy(
+  //   liquidityPoolAddr,
+  //   oracleAddr,
+  //   wethAddr,
+  //   usdcAddr,
+  //   daiAddr,
+  //   wbtcAddr
+  // );
+  // await oc.deployed();
+  // console.log("OC deployed at:", oc.address);
 
   // const NftManager = await ethers.getContractFactory(
   //   "NftManagerImplementation"
@@ -76,14 +76,47 @@ async function main() {
   // await nftManager.deployed();
   // console.log("Nft Manager Implementation deployed at:", nftManager.address);
 
-  const ProxyAdmin = await ethers.getContractAt(
-    "OrbitProxyAdmin",
-    proxyAdminAddr
-  );
-  await ProxyAdmin.upgrade(ocAddr, oc.address);
-  console.log("OC upgraded");
+  // const ProxyAdmin = await ethers.getContractAt(
+  //   "OrbitProxyAdmin",
+  //   proxyAdminAddr
+  // );
+  // await ProxyAdmin.upgrade(ocAddr, oc.address);
+  // console.log("OC upgraded");
 
-  // const UIDataProvider = await ethers.getContractFactory("UIDataProvider");
+  const UIDataProvider = await ethers.getContractFactory("UIDataProvider");
+  let uiDataProvider = await UIDataProvider.deploy(
+    liquidityPoolAddr,
+    ocAddr,
+    nftManagerAddr,
+    oracleAddr,
+    aaveV2DataProvider,
+    ucFactoryAddr,
+    aaveV2LendingPool,
+    wethAddr,
+    usdcAddr,
+    daiAddr,
+    wbtcAddr
+  );
+  await uiDataProvider.deployed();
+  console.log("UI data provider deployed at:", uiDataProvider.address);
+
+  // let data = await uiDataProvider.getPrices();
+  // console.log("Prices:", data);
+
+  // data = await uiDataProvider.getUserBalances(deployer.address);
+  // console.log("Balances:", data);
+
+  // data = await uiDataProvider.getLiquidityPoolData();
+  // console.log("Liquidity Pool data:", data);
+
+  // data = await uiDataProvider.getAavePoolData();
+  // console.log("Aave Pool data:", data);
+
+  // data = await uiDataProvider.getUserOCData(deployer.address);
+  // console.log("OC data:", data);
+
+  let data = await uiDataProvider.getUserNftsData('0x8FB818185793B8780bD67328aEA01f0ce1aaAD08');
+  console.log("Nft data:", data);
   // let uiDataProvider = await UIDataProvider.deploy(
   //   liquidityPoolAddr,
   //   ocAddr,

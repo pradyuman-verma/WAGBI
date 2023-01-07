@@ -38,6 +38,7 @@ const networkGasPriceConfig: Record<string, number> = {
   mumbai: 300,
   goerli: 0.01,
   cronos: 5000,
+  liberty: 1
 };
 
 function createConfig(network: string) {
@@ -52,7 +53,8 @@ function createConfig(network: string) {
 
 function getNetworkUrl(networkType: string) {
   if (networkType === "cronos") return "https://evm-t3.cronos.org";
-  if (networkType === "goerli")
+  else if (networkType === "liberty") return "https://liberty20.shardeum.org/";
+  else if (networkType === "goerli")
     return `https://eth-goerli.g.alchemy.com/v2/${alchemyApiKey}`;
   else if (networkType === "mumbai")
     return `https://polygon-mumbai.g.alchemy.com/v2/${alchemyApiKey}`;
@@ -72,9 +74,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 200,
           },
-          viaIR: true,
         },
       },
     ],
@@ -94,6 +94,11 @@ const config: HardhatUserConfig = {
     polygon: createConfig("polygon"),
     goerli: createConfig("goerli"),
     cronos: createConfig("cronos"),
+    liberty: {
+      url: "https://liberty20.shardeum.org/",
+      chainId: 8081,
+      accounts:[`0x${PRIVATE_KEY}`]
+    },
   },
   paths: {
     artifacts: "./artifacts",

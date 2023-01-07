@@ -14,7 +14,7 @@ async function main() {
   console.log("WETH test token deployed at:", weth.address);
 
   token = await ethers.getContractFactory("TestToken");
-  const usdc = await token.deploy("Test USDC", "USDC", "18");
+  const usdc = await token.deploy("Test USDC", "USDC", "6");
   await usdc.deployed();
   console.log("USDC test token deployed at:", usdc.address);
 
@@ -24,7 +24,7 @@ async function main() {
   console.log("DAI test token deployed at:", dai.address);
 
   token = await ethers.getContractFactory("TestToken");
-  const wbtc = await token.deploy("Test WBTC", "WBTC", "18");
+  const wbtc = await token.deploy("Test WBTC", "WBTC", "8");
   await wbtc.deployed();
   console.log("WBTC test token deployed at:", wbtc.address);
 

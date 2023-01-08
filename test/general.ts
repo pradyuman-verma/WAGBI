@@ -1,49 +1,67 @@
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "hardhat-deploy-ethers/signers";
+import { Address } from "hardhat-deploy/dist/types";
 import { liquidityPool } from "../typechain/contracts";
 const { expect } = require("chai");
 
 describe("General", function () {
-  const aaveV2LendingPool = "0x4bd5643ac6f66a5237E18bfA7d47cF22f1c9F210";
-  const aaveV2FallbackOracle = "0x0F9d5ED72f6691E47abe2f79B890C3C33e924092";
-  const aaveV2DataProvider = "0x927F584d4321C1dCcBf5e2902368124b02419a1E";
-
-  const aaveV2FaucetAddr = "0x681860075529352da2C94082Eb66c59dF958e89C";
-
-  const wethAddr = "0xCCa7d1416518D095E729904aAeA087dBA749A4dC";
-  const usdcAddr = "0x9FD21bE27A2B059a288229361E2fA632D8D2d074";
-  const daiAddr = "0x75Ab5AB1Eef154C0352Fc31D2428Cef80C7F8B33";
-  const wbtcAddr = "0xf4423F4152966eBb106261740da907662A3569C5";
+  let wethAddr: Address;
+  let usdcAddr: Address;
+  let daiAddr: Address;
+  let wbtcAddr: Address;
 
   const wethAmount = ethers.utils.parseUnits("10000", "18");
   const usdcAmount = ethers.utils.parseUnits("1000000", "6");
   const daiAmount = ethers.utils.parseUnits("1000000", "18");
   const wbtcAmount = ethers.utils.parseUnits("100", "8");
 
-  const fakeContract = aaveV2LendingPool;
+  let fakeContract: Address;
 
   let deployer: any;
 
   let proxyAdmin: Contract,
     liquidityPool: Contract,
     oracle: Contract,
-    oc: Contract,
-    ucWallet: Contract,
-    ucFactory: Contract,
-    nftManager: Contract;
+    oc: Contract;
 
   let liquidityPoolImplementation: Contract,
     oracleImplementation: Contract,
-    ocImplementation: Contract,
-    ucFactoryImplementation: Contract,
-    nftManagerImplementation: Contract,
-    ucWalletImplementation: Contract;
+    ocImplementation: Contract;
 
-  let aaveInteractor: Contract, faucet: Contract, uiDataProvider: Contract;
+  let faucet: Contract, uiDataProvider: Contract;
 
   before(async () => {
     [deployer] = await ethers.getSigners();
+
+    let token;
+    // tokens
+    token = await ethers.getContractFactory("TestToken");
+    const weth = await token.deploy("Test WETH", "WETH", "18");
+    await weth.deployed();
+    console.log("WETH test token deployed at:", weth.address);
+
+    token = await ethers.getContractFactory("TestToken");
+    const usdc = await token.deploy("Test USDC", "USDC", "6");
+    await usdc.deployed();
+    console.log("USDC test token deployed at:", usdc.address);
+
+    token = await ethers.getContractFactory("TestToken");
+    const dai = await token.deploy("Test DAI", "DAI", "18");
+    await dai.deployed();
+    console.log("DAI test token deployed at:", dai.address);
+
+    token = await ethers.getContractFactory("TestToken");
+    const wbtc = await token.deploy("Test WBTC", "WBTC", "8");
+    await wbtc.deployed();
+    console.log("WBTC test token deployed at:", wbtc.address);
+
+    wethAddr = weth.address;
+    usdcAddr = usdc.address;
+    daiAddr = dai.address;
+    wbtcAddr = wbtc.address;
+
+    fakeContract = wethAddr;
 
     // proxies
     const ProxyAdmin = await ethers.getContractFactory("OrbitProxyAdmin");
@@ -70,27 +88,9 @@ describe("General", function () {
     await oc.deployed();
     console.log("OC deployed at:", oc.address);
 
-    const UCWallet = await ethers.getContractFactory("UCWallet");
-    ucWallet = await UCWallet.deploy(fakeContract, proxyAdmin.address);
-    await ucWallet.deployed();
-    console.log("UC wallet deployed at:", ucWallet.address);
-
-    const UCFactory = await ethers.getContractFactory("UCFactory");
-    ucFactory = await UCFactory.deploy(fakeContract, proxyAdmin.address, "0x");
-    await ucFactory.deployed();
-    console.log("UC Factory deployed at:", ucFactory.address);
-
-    const NftManager = await ethers.getContractFactory("NftManager");
-    nftManager = await NftManager.deploy(
-      fakeContract,
-      proxyAdmin.address,
-      "0x"
-    );
-    await nftManager.deployed();
-    console.log("Nft Manager deployed at:", nftManager.address);
-
+    // faucet
     const Faucet = await ethers.getContractFactory("Faucet");
-    faucet = await Faucet.deploy(aaveV2FaucetAddr, wethAddr);
+    faucet = await Faucet.deploy();
     await faucet.deployed();
     console.log("Faucet deployed at:", faucet.address);
   });
@@ -100,9 +100,6 @@ describe("General", function () {
     expect(!!liquidityPool.address).to.equal(true);
     expect(!!oracle.address).to.equal(true);
     expect(!!oc.address).to.equal(true);
-    expect(!!ucWallet.address).to.equal(true);
-    expect(!!ucFactory.address).to.equal(true);
-    expect(!!nftManager.address).to.equal(true);
     expect(!!faucet.address).to.equal(true);
   });
 
@@ -110,9 +107,7 @@ describe("General", function () {
     const OracleImplementation = await ethers.getContractFactory(
       "OracleImplementation"
     );
-    oracleImplementation = await OracleImplementation.deploy(
-      aaveV2FallbackOracle
-    );
+    oracleImplementation = await OracleImplementation.deploy();
     await oracleImplementation.deployed();
     console.log(
       "Oracle implementation deployed at:",
@@ -121,6 +116,19 @@ describe("General", function () {
 
     await proxyAdmin.upgrade(oracle.address, oracleImplementation.address);
     console.log("Oracle implementation upgraded!");
+
+    const OracleProxy = await ethers.getContractAt(
+      "OracleImplementation",
+      oracleImplementation.address
+    );
+    await OracleProxy.setPrice(wethAddr, ethers.utils.parseEther("1"));
+    console.log("WETH price set!");
+    await OracleProxy.setPrice(usdcAddr, ethers.utils.parseEther("0.00083"));
+    console.log("USDC price set!");
+    await OracleProxy.setPrice(daiAddr, ethers.utils.parseEther("0.00083"));
+    console.log("DAI price set!");
+    await OracleProxy.setPrice(wbtcAddr, ethers.utils.parseEther("13"));
+    console.log("WBTC price set!");
   });
 
   it("should setup liquidity pool", async () => {
@@ -133,7 +141,7 @@ describe("General", function () {
       daiAddr,
       wbtcAddr,
       oc.address,
-      ucFactory.address
+      fakeContract
     );
     await liquidityPoolImplementation.deployed();
     console.log(
@@ -162,15 +170,6 @@ describe("General", function () {
       [wethAmount, usdcAmount, daiAmount, wbtcAmount]
     );
     console.log("OC params set!");
-
-    await liquidityPoolProxy.updateProtocolParams(
-      ucFactory.address,
-      [wethAddr, usdcAddr, daiAddr, wbtcAddr],
-      [1, 1, 1, 1],
-      [wethAddr, usdcAddr, daiAddr, wbtcAddr],
-      [wethAmount, usdcAmount, daiAmount, wbtcAmount]
-    );
-    console.log("UC params set!");
   });
 
   it("should setup oc", async () => {
@@ -196,84 +195,6 @@ describe("General", function () {
     console.log("OC initialized!");
   });
 
-  it("should setup uc wallet", async () => {
-    const AaveInteractor = await ethers.getContractFactory("AaveInteractor");
-    aaveInteractor = await AaveInteractor.deploy(
-      aaveV2LendingPool,
-      aaveV2DataProvider,
-      wethAddr,
-      usdcAddr,
-      daiAddr,
-      wbtcAddr
-    );
-    await aaveInteractor.deployed();
-    console.log("Aave interactor deployed at:", aaveInteractor.address);
-
-    const UCWalletImplementation = await ethers.getContractFactory(
-      "UCWalletImplementation"
-    );
-    ucWalletImplementation = await UCWalletImplementation.deploy(
-      liquidityPool.address,
-      oracle.address,
-      aaveV2DataProvider,
-      aaveInteractor.address,
-      wethAddr,
-      usdcAddr,
-      daiAddr,
-      wbtcAddr
-    );
-    await ucWalletImplementation.deployed();
-    console.log(
-      "UC wallet implementation deployed at:",
-      ucWalletImplementation.address
-    );
-
-    await proxyAdmin.upgrade(ucWallet.address, ucWalletImplementation.address);
-    console.log("UC wallet implementation upgraded!");
-  });
-
-  it("should setup uc factory", async () => {
-    const UCFactoryImplementation = await ethers.getContractFactory(
-      "UCFactoryImplementation"
-    );
-    ucFactoryImplementation = await UCFactoryImplementation.deploy(
-      liquidityPool.address,
-      ucWallet.address
-    );
-    await ucFactoryImplementation.deployed();
-    console.log(
-      "UC factory implementation deployed at:",
-      ucFactoryImplementation.address
-    );
-
-    await proxyAdmin.upgrade(
-      ucFactory.address,
-      ucFactoryImplementation.address
-    );
-    console.log("UC factory implementation upgraded!");
-  });
-
-  it("should setup nft manager", async () => {
-    const NftManagerImplementation = await ethers.getContractFactory(
-      "NftManagerImplementation"
-    );
-    nftManagerImplementation = await NftManagerImplementation.deploy(
-      ucFactory.address,
-      liquidityPool.address
-    );
-    await nftManagerImplementation.deployed();
-    console.log(
-      "Nft manager implementation deployed at:",
-      nftManagerImplementation.address
-    );
-
-    await proxyAdmin.upgrade(
-      nftManager.address,
-      nftManagerImplementation.address
-    );
-    console.log("Nft manager implementation upgraded!");
-  });
-
   it("should supply in oc", async () => {
     const amount = ethers.utils.parseUnits("100", "18");
     await faucet.mint(daiAddr, amount, deployer.address);
@@ -285,52 +206,12 @@ describe("General", function () {
     await ocProxy.supply(daiAddr, amount, deployer.address);
   });
 
-  it("should supply in uc", async () => {
-    const amount = ethers.utils.parseUnits("100", "18");
-    await faucet.mint(daiAddr, amount, deployer.address);
-
-    const daiToken = await ethers.getContractAt("IERC20", daiAddr);
-    await daiToken.approve(nftManager.address, amount);
-
-    const nftManagerProxy = await ethers.getContractAt(
-      "NftManagerImplementation",
-      nftManager.address
-    );
-    await nftManagerProxy.mint(deployer.address);
-
-    await nftManagerProxy.supplyToLiquidityPool(1, daiAddr, amount);
-  });
-
-  it("should supply in uc-aave", async () => {
-    const amount = ethers.utils.parseUnits("100", "18");
-    await faucet.mint(daiAddr, amount, deployer.address);
-
-    const daiToken = await ethers.getContractAt("IERC20", daiAddr);
-    await daiToken.approve(nftManager.address, amount);
-
-    const nftManagerProxy = await ethers.getContractAt(
-      "NftManagerImplementation",
-      nftManager.address
-    );
-    await nftManagerProxy.supplyToWallet(1, daiAddr, amount);
-
-    const ABI = ["function deposit(address,uint256)"];
-    const iface = new ethers.utils.Interface(ABI);
-    const data = iface.encodeFunctionData("deposit", [daiAddr, amount]);
-
-    await nftManagerProxy.useAave(1, data);
-  });
-
   it("should return data", async () => {
     const UIDataProvider = await ethers.getContractFactory("UIDataProvider");
     uiDataProvider = await UIDataProvider.deploy(
       liquidityPool.address,
       oc.address,
-      nftManager.address,
       oracle.address,
-      aaveV2DataProvider,
-      ucFactory.address,
-      aaveV2LendingPool,
       wethAddr,
       usdcAddr,
       daiAddr,
@@ -349,13 +230,7 @@ describe("General", function () {
     data = await uiDataProvider.getLiquidityPoolData();
     console.log("Liquidity Pool data:", data);
 
-    data = await uiDataProvider.getAavePoolData();
-    console.log("Aave Pool data:", data);
-
     data = await uiDataProvider.getUserOCData(deployer.address);
     console.log("OC data:", data);
-
-    data = await uiDataProvider.getUserNftsData(deployer.address);
-    console.log("Nft data:", data);
   });
 });

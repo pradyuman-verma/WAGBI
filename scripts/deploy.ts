@@ -9,7 +9,7 @@ async function main() {
   let token;
   // tokens
   token = await ethers.getContractFactory("TestToken");
-  const weth = await token.deploy("Test WETH", "WETH", "18", {gasLimit: 40000000});
+  const weth = await token.deploy("Test WETH", "WETH", "18");
   await weth.deployed();
   console.log("WETH test token deployed at:", weth.address);
 
@@ -31,7 +31,7 @@ async function main() {
   const wethAddr = weth.address;
   const usdcAddr = usdc.address;
   const daiAddr = dai.address;
-  const wbtcAddr = weth.address;
+  const wbtcAddr = wbtc.address;
 
   const fakeContract = wethAddr;
 

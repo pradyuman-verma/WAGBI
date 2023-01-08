@@ -83,22 +83,9 @@ async function main() {
   // await ProxyAdmin.upgrade(ocAddr, oc.address);
   // console.log("OC upgraded");
 
-  const UIDataProvider = await ethers.getContractFactory("UIDataProvider");
-  let uiDataProvider = await UIDataProvider.deploy(
-    liquidityPoolAddr,
-    ocAddr,
-    nftManagerAddr,
-    oracleAddr,
-    aaveV2DataProvider,
-    ucFactoryAddr,
-    aaveV2LendingPool,
-    wethAddr,
-    usdcAddr,
-    daiAddr,
-    wbtcAddr
-  );
-  await uiDataProvider.deployed();
-  console.log("UI data provider deployed at:", uiDataProvider.address);
+  const UIDataProvider = await ethers.getContractAt("UIDataProvider", "0xA3D189A20A4b52C6c37aD1c7c577294c6b5D65ca");
+  const data = await UIDataProvider.getUserOCData('0x8FB818185793B8780bD67328aEA01f0ce1aaAD08')
+  console.log("UI data provider deployed at:", data);
 
   // let data = await uiDataProvider.getPrices();
   // console.log("Prices:", data);
@@ -115,8 +102,8 @@ async function main() {
   // data = await uiDataProvider.getUserOCData(deployer.address);
   // console.log("OC data:", data);
 
-  let data = await uiDataProvider.getUserNftsData('0x8FB818185793B8780bD67328aEA01f0ce1aaAD08');
-  console.log("Nft data:", data);
+  // let data = await uiDataProvider.getUserNftsData('0x8FB818185793B8780bD67328aEA01f0ce1aaAD08');
+  // console.log("Nft data:", data);
   // let uiDataProvider = await UIDataProvider.deploy(
   //   liquidityPoolAddr,
   //   ocAddr,

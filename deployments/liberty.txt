@@ -13,3 +13,6 @@ UI data provider deployed at: 0xA3D189A20A4b52C6c37aD1c7c577294c6b5D65ca
 Oracle implementation deployed at: 0x7419D88b026e07E785b9289fB79Faea3771f559B
 Liquidity Pool implementation deployed at: 0x306AeE78c5a17B728DF6141776Aa14Fad8DbfAFF
 OC implementation deployed at: 0x17fa45a0af570CA2367F8895d7E8634Af176fF85
+
+Multicall deployed at: 0xe11Dc612e785Ac280277733f69b8e5CF3c83B28C
+Multicall2 deployed at: 0x833B0F796d9FdbF3AcdD603e0167Eb2eAAFc3898

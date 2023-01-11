@@ -83,10 +83,10 @@ contract OCImplementation is Helpers {
         );
 
         uint256 userTokensData_ = userTokensData[msg.sender];
-
+        uint256 newUserTokensData_ = userTokensData_;
         // update user tokens data
         if (userFinalSuppliedAmount_ == 0) {
-            uint256 newUserTokensData_ = removeFromSupplyTokens(
+            newUserTokensData_ = removeFromSupplyTokens(
                 userTokensData_,
                 assetIndex_
             );
@@ -94,7 +94,7 @@ contract OCImplementation is Helpers {
                 userTokensData[msg.sender] = newUserTokensData_;
         }
 
-        checkHf(msg.sender, userTokensData_);
+        checkHf(msg.sender, newUserTokensData_);
 
         // TODO: event
     }
@@ -127,7 +127,7 @@ contract OCImplementation is Helpers {
         if (newUserTokensData_ != userTokensData_)
             userTokensData[msg.sender] = newUserTokensData_;
 
-        checkHf(msg.sender, userTokensData_);
+        checkHf(msg.sender, newUserTokensData_);
 
         // TODO: event
     }
